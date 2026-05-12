@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bộ Não Pháp Luật XNK</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ─── TOKENS ─── */
+:root,[data-theme=light]{
+  --color-bg:#f5f4f0;--color-surface:#f9f8f5;--color-surface-2:#fdfdfc;
+  --color-surface-offset:#edeae5;--color-surface-dynamic:#e3e0da;
+  --color-border:#d4d1ca;--color-divider:#dcd9d5;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#b0afa9;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-light:#e0eeee;
+  --color-secondary:#4a5568;
+  --color-warning:#964219;--color-warning-light:#fdf0e8;--color-warning-border:#e8a97a;
+  --color-error:#a12c7b;--color-error-light:#fdf0f8;--color-error-border:#d491bc;
+  --color-success:#437a22;--color-success-light:#edf6e8;--color-success-border:#8ec46a;
+  --color-info:#006494;--color-info-light:#e8f4fc;--color-info-border:#7ab8d9;
+  --shadow-sm:0 1px 3px oklch(0.2 0.01 80/0.07);
+  --shadow-md:0 4px 16px oklch(0.2 0.01 80/0.09);
+  --shadow-lg:0 12px 40px oklch(0.2 0.01 80/0.13);
+  --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;--radius-full:9999px;
+  --font-display:'Cabinet Grotesk',sans-serif;
+  --font-body:'Satoshi',sans-serif;
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
+  --sidebar-w:260px;
+  --text-xs:clamp(0.75rem,0.7rem + 0.15vw,0.8rem);
+  --text-sm:clamp(0.8rem,0.75rem + 0.2vw,0.875rem);
+  --text-base:clamp(0.9rem,0.85rem + 0.2vw,1rem);
+  --text-lg:clamp(1rem,0.95rem + 0.3vw,1.2rem);
+  --text-xl:clamp(1.2rem,1rem + 0.6vw,1.5rem);
+}
+[data-theme=dark]{
+  --color-bg:#131211;--color-surface:#1a1917;--color-surface-2:#1f1e1c;
+  --color-surface-offset:#1d1c1a;--color-surface-dynamic:#2a2926;
+  --color-border:#333230;--color-divider:#252422;
+  --color-text:#d0ceca;--color-text-muted:#7a7876;--color-text-faint:#555350;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-light:#1c3335;
+  --color-warning-light:#2a1e12;--color-warning-border:#7a4a1e;
+  --color-error-light:#2a1222;--color-error-border:#7a2a5a;
+  --color-success-light:#152412;--color-success-border:#3a6a22;
+  --color-info-light:#0e2030;--color-info-border:#2a5a7a;
+  --shadow-sm:0 1px 3px oklch(0 0 0/0.2);
+  --shadow-md:0 4px 16px oklch(0 0 0/0.3);
+  --shadow-lg:0 12px 40px oklch(0 0 0/0.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:1fr;height:100dvh}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;transition:color var(--transition),background var(--transition),box-shadow var(--transition)}
+a{color:inherit;text-decoration:none}
+input{font:inherit;color:inherit;outline:none}
+/* ─── SIDEBAR ─── */
+.sidebar{grid-column:1;grid-row:1;background:var(--color-surface);border-right:1px solid var(--color-border);display:flex;flex-direction:column;overflow:hidden;z-index:10}
+.sidebar-logo{padding:16px 16px 12px;border-bottom:1px solid var(--color-divider);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-mark{width:32px;height:32px;flex-shrink:0}
+.logo-text{font-family:var(--font-display);font-size:var(--text-sm);font-weight:800;line-height:1.1;color:var(--color-text)}
+.logo-sub{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:400}
+.sidebar-search{padding:10px 12px;border-bottom:1px solid var(--color-divider);flex-shrink:0}
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:7px 10px;transition:border-color var(--transition),box-shadow var(--transition)}
+.search-wrap:focus-within{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in oklab,var(--color-primary) 20%,transparent)}
+.search-wrap i{color:var(--color-text-muted);flex-shrink:0}
+.search-input{flex:1;background:none;border:none;font-size:var(--text-sm);color:var(--color-text)}
+.search-input::placeholder{color:var(--color-text-faint)}
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0;overscroll-behavior:contain}
+.nav-section-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.08em;padding:8px 14px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 14px;font-size:var(--text-sm);border-radius:0;cursor:pointer;position:relative;transition:background var(--transition),color var(--transition)}
+.nav-item:hover{background:var(--color-surface-offset)}
+.nav-item.active{background:var(--color-primary-light);color:var(--color-primary);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;height:100%;width:2.5px;background:var(--color-primary);border-radius:0 2px 2px 0}
+.nav-badge{margin-left:auto;font-size:var(--text-xs);padding:1px 6px;border-radius:var(--radius-full);background:var(--color-surface-dynamic);color:var(--color-text-muted)}
+.sidebar-footer{padding:10px 12px;border-top:1px solid var(--color-divider);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.footer-text{font-size:var(--text-xs);color:var(--color-text-muted)}
+.icon-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);color:var(--color-text-muted)}
+.icon-btn:hover{background:var(--color-surface-offset);color:var(--color-text)}
+/* ─── MAIN ─── */
+.main{grid-column:2;grid-row:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:12px 20px;border-bottom:1px solid var(--color-border);background:var(--color-surface);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:800;color:var(--color-text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--color-divider);background:var(--color-surface-2);flex-shrink:0;align-items:center}
+.filter-label{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-right:2px}
+.tag-btn{font-size:var(--text-xs);padding:4px 10px;border-radius:var(--radius-full);border:1px solid var(--color-border);background:var(--color-surface);cursor:pointer;transition:all var(--transition);color:var(--color-text-muted);font-weight:500}
+.tag-btn:hover{border-color:var(--color-primary);color:var(--color-primary);background:var(--color-primary-light)}
+.tag-btn.active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+.content-area{flex:1;overflow-y:auto;padding:16px 20px;overscroll-behavior:contain}
+/* ─── CARDS ─── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;transition:box-shadow var(--transition),border-color var(--transition);cursor:pointer}
+.card:hover{box-shadow:var(--shadow-md);border-color:color-mix(in oklab,var(--color-primary) 30%,var(--color-border))}
+.card-header{padding:12px 14px 10px;display:flex;align-items:flex-start;gap:10px}
+.card-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:600;padding:3px 8px;border-radius:var(--radius-full);white-space:nowrap;flex-shrink:0}
+.badge-primary{background:var(--color-primary-light);color:var(--color-primary)}
+.badge-secondary{background:var(--color-surface-dynamic);color:var(--color-text-muted)}
+.badge-warning{background:var(--color-warning-light);color:var(--color-warning)}
+.badge-error{background:var(--color-error-light);color:var(--color-error)}
+.badge-success{background:var(--color-success-light);color:var(--color-success)}
+.card-title-wrap{flex:1;min-width:0}
+.card-ky-hieu{font-family:var(--font-display);font-size:var(--text-sm);font-weight:700;color:var(--color-primary);margin-bottom:2px}
+.card-title{font-size:var(--text-sm);font-weight:600;color:var(--color-text);line-height:1.35}
+.card-body{padding:0 14px 12px}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.meta-item{display:flex;align-items:center;gap:4px;font-size:var(--text-xs);color:var(--color-text-muted)}
+.card-dieu{margin-bottom:8px}
+.dieu-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.dieu-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+.dieu-list li{font-size:var(--text-xs);color:var(--color-text-muted);padding:2px 0 2px 12px;position:relative;line-height:1.45}
+.dieu-list li::before{content:'›';position:absolute;left:0;color:var(--color-primary);font-weight:700}
+.card-note{font-size:var(--text-xs);background:var(--color-surface-offset);border-radius:var(--radius-sm);padding:6px 8px;color:var(--color-text-muted);line-height:1.4;border-left:2px solid var(--color-primary)}
+.card-note.warn{border-left-color:var(--color-warning);background:var(--color-warning-light)}
+.card-note.danger{border-left-color:var(--color-error);background:var(--color-error-light)}
+/* ─── DETAIL PANEL ─── */
+.detail-overlay{position:fixed;inset:0;background:oklch(0.1 0 0/0.5);z-index:100;opacity:0;pointer-events:none;transition:opacity var(--transition)}
+.detail-overlay.open{opacity:1;pointer-events:all}
+.detail-panel{position:fixed;right:0;top:0;height:100dvh;width:min(520px,100vw);background:var(--color-surface);box-shadow:var(--shadow-lg);transform:translateX(100%);transition:transform 320ms cubic-bezier(0.16,1,0.3,1);overflow-y:auto;z-index:101;overscroll-behavior:contain}
+.detail-panel.open{transform:translateX(0)}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--color-border);display:flex;align-items:flex-start;gap:12px;position:sticky;top:0;background:var(--color-surface);z-index:1}
+.panel-header-text{flex:1;min-width:0}
+.panel-ky-hieu{font-family:var(--font-display);font-size:var(--text-lg);font-weight:800;color:var(--color-primary);margin-bottom:2px}
+.panel-title{font-size:var(--text-sm);color:var(--color-text-muted);line-height:1.4}
+.panel-body{padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+.panel-section{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden}
+.panel-section-head{padding:10px 14px;background:var(--color-surface-offset);border-bottom:1px solid var(--color-divider);font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px}
+.panel-section-body{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.panel-row{display:flex;gap:8px}
+.panel-row-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);min-width:80px;flex-shrink:0;padding-top:1px}
+.panel-row-value{font-size:var(--text-xs);color:var(--color-text);flex:1;line-height:1.5}
+.dieu-item{display:flex;align-items:baseline;gap:6px;padding:6px 0;border-bottom:1px solid var(--color-divider)}
+.dieu-item:last-child{border-bottom:none}
+.dieu-num{font-size:var(--text-xs);font-weight:700;color:var(--color-primary);min-width:16px;flex-shrink:0}
+.dieu-text{font-size:var(--text-sm);color:var(--color-text);line-height:1.45}
+.related-chips{display:flex;flex-wrap:wrap;gap:6px}
+.related-chip{font-size:var(--text-xs);padding:4px 10px;border-radius:var(--radius-full);background:var(--color-primary-light);color:var(--color-primary);cursor:pointer;border:1px solid transparent;transition:all var(--transition)}
+.related-chip:hover{background:var(--color-primary);color:#fff}
+/* ─── FLOWCHART VIEW ─── */
+.flow-wrap{display:flex;flex-direction:column;gap:0}
+.flow-step{display:flex;gap:14px;align-items:flex-start}
+.flow-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.flow-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;flex-shrink:0;z-index:1}
+.flow-connector{width:2px;flex:1;min-height:16px;background:var(--color-border)}
+.flow-content{flex:1;padding-bottom:16px}
+.flow-step-title{font-size:var(--text-sm);font-weight:700;color:var(--color-text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.flow-vbs{display:flex;flex-direction:column;gap:4px}
+.flow-vb-chip{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition)}
+.flow-vb-chip:hover{background:var(--color-primary-light);border-color:var(--color-primary)}
+.flow-vb-code{font-family:var(--font-display);font-size:var(--text-xs);font-weight:700;color:var(--color-primary);min-width:150px}
+.flow-vb-name{font-size:var(--text-xs);color:var(--color-text-muted);flex:1}
+/* ─── EMPTY / RESULTS ─── */
+.empty-state{text-align:center;padding:48px 24px;color:var(--color-text-muted)}
+.empty-icon{margin:0 auto 12px;width:40px;height:40px;color:var(--color-text-faint)}
+.empty-title{font-size:var(--text-base);font-weight:600;color:var(--color-text);margin-bottom:4px}
+.result-count{font-size:var(--text-xs);color:var(--color-text-muted);padding:0 0 8px;display:flex;align-items:center;gap:4px}
+/* ─── CHI TIẾT (expanded detail) ─── */
+.chi-tiet-section{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden}
+.chi-tiet-head{padding:10px 14px;background:var(--color-surface-offset);border-bottom:1px solid var(--color-divider);font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px}
+.chi-tiet-nhom{border-bottom:1px solid var(--color-divider)}
+.chi-tiet-nhom:last-child{border-bottom:none}
+.chi-tiet-nhom-title{display:flex;align-items:center;gap:7px;padding:8px 14px;font-size:var(--text-xs);font-weight:700;color:var(--color-primary);background:var(--color-primary-light);border-bottom:1px solid var(--color-divider)}
+.chi-tiet-rows{padding:4px 0}
+.chi-tiet-row{display:block;padding:6px 14px;border-bottom:1px solid var(--color-divider);font-size:var(--text-xs)}
+.chi-tiet-row:last-child{border-bottom:none}
+.chi-tiet-k{display:block;color:var(--color-text);font-weight:600;line-height:1.5;margin-bottom:2px}
+.chi-tiet-v{display:block;color:var(--color-text-muted);line-height:1.55}
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--color-divider);border-radius:var(--radius-full)}
+::-webkit-scrollbar-thumb:hover{background:var(--color-border)}
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  body{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:-var(--sidebar-w);top:0;height:100dvh;width:var(--sidebar-w);transform:translateX(-100%);transition:transform var(--transition);z-index:200}
+  .sidebar.open{transform:translateX(0)}
+  .main{grid-column:1}
+}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadein 200ms cubic-bezier(0.16,1,0.3,1) both}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-mark" viewBox="0 0 32 32" fill="none" aria-label="Logo">
+      <rect width="32" height="32" rx="8" fill="var(--color-primary)"/>
+      <path d="M8 10h10M8 16h16M8 22h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="23" cy="10" r="3" fill="white" opacity="0.9"/>
+    </svg>
+    <div>
+      <div class="logo-text">Bộ Não XNK</div>
+      <div class="logo-sub">THƯ VIỆN VBPL</div>
+    </div>
+  </div>
+  <div class="sidebar-search">
+    <div class="search-wrap">
+      <i data-lucide="search" style="width:14px;height:14px"></i>
+      <input class="search-input" id="searchInput" type="text" placeholder="Tìm văn bản, điều khoản...">
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Chế độ xem</div>
+    <div class="nav-item active" data-view="all" onclick="setView(this,'all')">
+      <i data-lucide="layers" style="width:15px;height:15px"></i>Tất cả văn bản<span class="nav-badge" id="badge-all">34</span>
+    </div>
+    <div class="nav-item" data-view="flow" onclick="setView(this,'flow')">
+      <i data-lucide="git-merge" style="width:15px;height:15px"></i>Luồng tra cứu khai báo
+    </div>
+    <div class="nav-item" data-view="pca" onclick="setView(this,'pca')">
+      <i data-lucide="shield-check" style="width:15px;height:15px"></i>Sau thông quan (PCA)
+    </div>
+    <div class="nav-section-label" style="margin-top:8px">Theo nhóm hàng</div>
+    <div class="nav-item" data-view="hoa_chat" onclick="setView(this,'hoa_chat')">
+      <i data-lucide="flask-conical" style="width:15px;height:15px"></i>Hóa chất<span class="nav-badge">6</span>
+    </div>
+    <div class="nav-item" data-view="thuc_pham" onclick="setView(this,'thuc_pham')">
+      <i data-lucide="salad" style="width:15px;height:15px"></i>Thực phẩm / ATTP
+    </div>
+    <div class="nav-item" data-view="phan_bon" onclick="setView(this,'phan_bon')">
+      <i data-lucide="leaf" style="width:15px;height:15px"></i>Phân bón<span class="nav-badge">5</span>
+    </div>
+    <div class="nav-item" data-view="may_moc" onclick="setView(this,'may_moc')">
+      <i data-lucide="settings" style="width:15px;height:15px"></i>Máy móc TB<span class="nav-badge">9</span>
+    </div>
+    <div class="nav-item" data-view="fta" onclick="setView(this,'fta')">
+      <i data-lucide="globe" style="width:15px;height:15px"></i>Xuất xứ & FTA
+    </div>
+    <div class="nav-section-label" style="margin-top:8px">Theo tình huống</div>
+    <div class="nav-item" data-view="kiem_tra_ho_so" onclick="setView(this,'kiem_tra_ho_so')">
+      <i data-lucide="file-check" style="width:15px;height:15px"></i>Kiểm tra hồ sơ
+    </div>
+    <div class="nav-item" data-view="hang_hoa_cam" onclick="setView(this,'hang_hoa_cam')">
+      <i data-lucide="ban" style="width:15px;height:15px"></i>Hàng cấm / Điều kiện
+    </div>
+    <div class="nav-item" data-view="xu_phat" onclick="setView(this,'xu_phat')">
+      <i data-lucide="triangle-alert" style="width:15px;height:15px"></i>Xử phạt vi phạm
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="footer-text">Cập nhật 05/2026</div>
+    <button class="icon-btn" onclick="toggleTheme()" data-theme-toggle aria-label="Chuyển giao diện">
+      <i data-lucide="sun" style="width:15px;height:15px"></i>
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="viewTitle">Tất cả văn bản pháp luật</div>
+    <button class="icon-btn" id="menuBtn" onclick="toggleSidebar()" style="display:none" aria-label="Menu">
+      <i data-lucide="menu" style="width:18px;height:18px"></i>
+    </button>
+  </div>
+  <div class="filter-row" id="filterRow">
+    <span class="filter-label">Lọc:</span>
+    <button class="tag-btn active" data-filter="all" onclick="setFilter(this,'all')">Tất cả</button>
+    <button class="tag-btn" data-filter="VBHN" onclick="setFilter(this,'VBHN')">VBHN</button>
+    <button class="tag-btn" data-filter="Luật" onclick="setFilter(this,'Luật')">Luật</button>
+    <button class="tag-btn" data-filter="Nghị định" onclick="setFilter(this,'Nghị định')">Nghị định</button>
+    <button class="tag-btn" data-filter="Thông tư" onclick="setFilter(this,'Thông tư')">Thông tư</button>
+    <button class="tag-btn" data-filter="Quyết định" onclick="setFilter(this,'Quyết định')">Quyết định</button>
+  </div>
+  <div class="content-area" id="contentArea"></div>
+</main>
+
+<!-- DETAIL OVERLAY + PANEL -->
+<div class="detail-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="panel-header">
+    <div class="panel-header-text">
+      <div class="panel-ky-hieu" id="panelKyHieu"></div>
+      <div class="panel-title" id="panelTitle"></div>
+    </div>
+    <button class="icon-btn" onclick="closePanel()"><i data-lucide="x" style="width:16px;height:16px"></i></button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+</div>
+
+<script>
+// ─── DATA ───
+const VB = [
+  // ── NHÓM CHUNG ──
+  {id:"54VBHN",ky_hieu:"54/VBHN-VPQH",ten:"Luật Hải quan (Văn bản hợp nhất)",co_quan:"Văn phòng Quốc hội",hieu_luc:"23/03/2026",loai:"VBHN",cap:"Luật",nhom:["hai_quan","tat_ca"],tinh_huong:["khai_bao","kiem_tra_ho_so","phap_ly","kiem_tra_sau_thong_quan","hang_hoa_cam"],dieu_tiet:["Thủ tục hải quan tổng thể (Chương II)","Kiểm tra, giám sát hải quan (Chương III)","Phân loại hàng hóa, mã HS (Điều 26)","Kiểm tra sau thông quan (Điều 77–80) – thời hạn 5 năm","Quyền & nghĩa vụ người khai hải quan (Điều 18–19)"],chi_tiet:[
+    {nhom:"Quyền & nghĩa vụ người khai hải quan – Điều 18",icon:"user-check",items:[
+      {k:"Quyền được cung cấp thông tin",v:"Được HQ cung cấp thông tin về khai HQ, hướng dẫn làm thủ tục, phổ biến pháp luật. Được yêu cầu xác định trước mã số, xuất xứ, trị giá khi cung cấp đầy đủ thông tin"},
+      {k:"Quyền xem hàng, lấy mẫu trước khai",v:"Được xem trước hàng hóa và lấy mẫu dưới sự giám sát của công chức HQ để khai chính xác. Được yêu cầu KTTC lại nếu không đồng ý với quyết định HQ (khi hàng chưa TQ)"},
+      {k:"Quyền khiếu nại & bồi thường",v:"Được khiếu nại, tố cáo hành vi trái pháp luật của cơ quan HQ, CCHQ. Được yêu cầu bồi thường thiệt hại do HQ gây ra theo Luật TNBT Nhà nước"},
+      {k:"Nghĩa vụ khai & chịu trách nhiệm",v:"Chịu trách nhiệm trước pháp luật về: tính xác thực nội dung đã khai, chứng từ đã nộp/xuất trình; sự thống nhất giữa hồ sơ lưu tại DN với hồ sơ lưu tại HQ"},
+      {k:"Nghĩa vụ lưu giữ hồ sơ",v:"Lưu giữ hồ sơ HQ của hàng đã TQ trong 05 năm kể từ ngày đăng ký TK HQ. Lưu giữ sổ sách, chứng từ kế toán và các tài liệu liên quan theo pháp luật kế toán"},
+      {k:"Nghĩa vụ tài chính",v:"Nộp thuế XK, NK, VAT, TTĐB và các khoản thu khác theo pháp luật thuế, phí, lệ phí trước hoặc tại thời điểm thông quan/giải phóng hàng theo quy định"}
+    ]},
+    {nhom:"Thủ tục HQ: thời hạn & hồ sơ – Điều 21-25",icon:"file-clock",items:[
+      {k:"Thời hạn HQ kiểm tra hồ sơ (Điều 23)",v:"≤ 2 giờ làm việc kể từ khi tiếp nhận đủ hồ sơ HQ. Hàng lớn/phức tạp: Thủ trưởng HQ quyết định gia hạn nhưng phải thông báo cho người khai"},
+      {k:"Thời hạn HQ kiểm tra thực tế hàng (Điều 23)",v:"≤ 8 giờ làm việc kể từ khi người khai xuất trình đủ hàng. Hàng KTCN: thực hiện KTCN song song không phải chờ TQ rồi mới kiểm. HQ làm cả ngày nghỉ/lễ"},
+      {k:"Hồ sơ HQ (Điều 24)",v:"Gồm: Tờ khai HQ (hoặc CT thay thế) + Chứng từ liên quan (HĐ mua bán, CI, B/L, C/O, giấy phép XNK, kết quả KTCN). CT điện tử = CT giấy nếu toàn vẹn và đúng khuôn dạng. Áp dụng cơ chế 1 cửa QG: GP và kết quả KTCN gửi điện tử → không phải nộp bản giấy"},
+      {k:"Thời hạn nộp TK hàng XK (Điều 25)",v:"Sau khi đã tập kết hàng tại địa điểm đã thông báo và CHẬM NHẤT là 4 giờ trước khi phương tiện vận tải xuất cảnh. Hàng gửi qua bưu chính/chuyển phát nhanh: trước khi gửi"},
+      {k:"Thời hạn nộp TK hàng NK (Điều 25)",v:"Trước ngày hàng đến cửa khẩu HOẶC trong thời hạn 30 ngày kể từ ngày hàng đến cửa khẩu. Quá 30 ngày không đến làm thủ tục → HQ KTTC vắng mặt và xử lý hàng tồn đọng"}
+    ]},
+    {nhom:"Phân loại HS, xác định trước & kiểm tra xuất xứ – Điều 26-28",icon:"tag",items:[
+      {k:"Phân loại mã HS (Điều 26)",v:"Căn cứ: hồ sơ HQ + tài liệu kỹ thuật + thông tin liên quan. Danh mục HHXNK VN xây dựng theo HS Convention quốc tế, Bộ Tài chính ban hành thống nhất toàn quốc. HQ xác định mã số căn cứ hồ sơ + KTTC + kết quả phân tích/GĐ"},
+      {k:"Xác định trước mã số/XK/trị giá (Điều 28)",v:"Người khai nộp mẫu hàng (hoặc tài liệu kỹ thuật nếu không có mẫu). HQ ra văn bản thông báo kết quả → có giá trị pháp lý khi hàng thực XNK phù hợp với thông tin đã cung cấp. Trong 60 ngày có quyền yêu cầu xem xét lại kết quả"},
+      {k:"Kiểm tra XK hàng NK (Điều 27)",v:"Chờ kết quả xác minh XK (tại nước SX theo ĐUQT): hàng được TQ nhưng KHÔNG được thuế suất ưu đãi đặc biệt. Sau khi có kết quả xác minh: tính thuế chính thức và thu/hoàn phần chênh lệch"},
+      {k:"Xác định XK hàng XK (Điều 27)",v:"HQ xác định XK hàng XK trên cơ sở: khai của người khai + chứng từ hồ sơ + KTTC. Khi có nghi ngờ: yêu cầu cung cấp thêm chứng từ và tiến hành kiểm tra xác minh"}
+    ]},
+    {nhom:"Kiểm tra HQ, giải phóng & thông quan – Điều 31-37",icon:"shield-check",items:[
+      {k:"Căn cứ, thẩm quyền kiểm tra (Điều 31)",v:"Thủ trưởng HQ nơi xử lý hồ sơ quyết định kiểm tra hồ sơ và KTTC căn cứ kết quả phân tích đánh giá rủi ro và thông tin liên quan đến hàng hóa"},
+      {k:"Miễn kiểm tra thực tế (Điều 33)",v:"Miễn KTTC bắt buộc: hàng phục vụ yêu cầu khẩn cấp; hàng QP-AN chuyên dùng; trường hợp đặc biệt theo QĐ Thủ tướng. Nhưng NẾU có dấu hiệu vi phạm → vẫn phải kiểm tra"},
+      {k:"Ưu tiên KTTC (Điều 33)",v:"Động vật, thực vật sống, hàng khó bảo quản, hàng đặc biệt → được ưu tiên KTTC trước để tránh hư hỏng. KTTC có thể bằng máy móc/thiết bị kỹ thuật hoặc trực tiếp"},
+      {k:"KTTC vắng mặt người khai (Điều 34)",v:"Thủ trưởng HQ quyết định KTTC vắng mặt khi: an ninh; vệ sinh/môi trường; có dấu hiệu vi phạm; QUÁ 30 ngày từ ngày hàng đến CK mà không đến làm TT. Hình thức: máy soi, thiết bị kỹ thuật, hoặc mở trực tiếp có đại diện cơ quan NN + DN vận tải/cảng chứng kiến"},
+      {k:"Giải phóng hàng (Điều 36) vs Thông quan (Điều 37)",v:"GIẢI PHÓNG HÀNG: hàng được đưa ra trong khi chưa hoàn thành đầy đủ TTHQ (chờ trị giá, chờ giám định). THÔNG QUAN: hoàn thành toàn bộ TTHQ. Sau TQ hàng mới chính thức được lưu thông nội địa"}
+    ]},
+    {nhom:"Chế độ ưu tiên doanh nghiệp – Điều 43-45",icon:"star",items:[
+      {k:"Ưu đãi chính (Điều 43)",v:"(1) Miễn kiểm tra chứng từ + miễn KTTC trong quá trình làm TTHQ (trừ vi phạm hoặc ngẫu nhiên); (2) Được làm TT bằng TK chưa hoàn chỉnh – trong 30 ngày phải hoàn chỉnh; (3) Ưu tiên thủ tục thuế"},
+      {k:"Điều kiện duy trì ưu tiên",v:"Định kỳ hàng năm phải cung cấp báo cáo kiểm toán + báo cáo tài chính cho HQ. Thông báo ngay cho HQ khi bị cơ quan thuế/kế toán xử lý vi phạm. Chấp hành đầy đủ các quy định kiểm tra giám sát của HQ"},
+      {k:"Thẩm quyền công nhận",v:"Tổng cục trưởng TCHQ xét, công nhận, gia hạn, tạm đình chỉ, đình chỉ chế độ ưu tiên. Đây là cấp cao nhất – Chi cục/Cục HQ không có thẩm quyền công nhận"}
+    ]},
+    {nhom:"Kiểm tra sau thông quan (PCA) – Điều 77-82",icon:"search",items:[
+      {k:"Phạm vi & thời hạn PCA (Điều 77)",v:"Kiểm tra: hồ sơ HQ + sổ kế toán + CT kế toán + tài liệu liên quan + thực tế hàng hóa. Thời hạn: 5 NĂM kể từ ngày đăng ký TK HQ. Địa điểm: tại trụ sở HQ HOẶC tại trụ sở DN (gồm trụ sở chính, chi nhánh, cửa hàng, nơi SX, nơi lưu giữ hàng)"},
+      {k:"Các trường hợp PCA (Điều 78)",v:"(1) Có dấu hiệu vi phạm pháp luật HQ và quy định quản lý XNK; (2) Áp dụng QLRR (định kỳ); (3) Kiểm tra tuân thủ pháp luật của người khai HQ"},
+      {k:"PCA tại trụ sở HQ (Điều 79)",v:"Gửi QĐ KT cho DN: trong 3 ngày sau khi ký + chậm nhất 5 ngày trước khi KT. Thời gian KT: tối đa 5 ngày làm việc. Trong 5 ngày sau KT: ký Thông báo kết quả gửi cho DN. Không chứng minh được → HQ ấn định thuế + XLVP"},
+      {k:"PCA tại trụ sở DN (Điều 80)",v:"Thời gian KT: tối đa 10 ngày làm việc (có thể gia hạn khi phức tạp). Gửi QĐ: trong 3 ngày sau ký + chậm nhất 5 ngày trước KT. Biên bản: trong 5 ngày sau KT. Kết luận KT: trong 15 ngày sau KT. Nếu DN không chấp hành → HQ căn cứ tài liệu đã thu thập để xử lý"},
+      {k:"Quyền của DN trong PCA (Điều 82)",v:"Từ chối cung cấp thông tin không liên quan đến nội dung KT, thông tin bí mật nhà nước. Nhận kết luận KT và yêu cầu giải thích; bảo lưu ý kiến trong biên bản. Yêu cầu Trưởng đoàn xuất trình QĐ KT + GCMHQ khi KT tại trụ sở DN"}
+    ]}
+  ],
+  ghi_chu:"Thay thế Luật 54/2014 riêng lẻ. Văn bản ĐẦU TIÊN cần tra cứu.",mau:"primary",thu_tu:1,lien_ket:["46VBHN","TT38"]},
+  {id:"46VBHN",ky_hieu:"46/VBHN-BTC",ten:"Nghị định hướng dẫn Luật Hải quan (Văn bản hợp nhất)",co_quan:"Bộ Tài chính",hieu_luc:"2025",loai:"VBHN",cap:"Nghị định",nhom:["hai_quan","tat_ca"],tinh_huong:["khai_bao","kiem_tra_ho_so","phap_ly","kiem_tra_sau_thong_quan"],dieu_tiet:["Thủ tục hải quan điện tử VNACCS/VCIS","Phân loại hàng hóa, mã HS – hướng dẫn chi tiết","Kiểm tra sau thông quan tại cơ quan HQ (Điều 78–80)","Kiểm tra sau thông quan tại trụ sở DN (Điều 81–84)","Hàng gia công, SXXK, DNCX"],chi_tiet:[
+    {nhom:"Chế độ ưu tiên DN – Điều 9-10 (46VBHN)",icon:"star",items:[
+      {k:"Ưu đãi cụ thể (Điều 9)",v:"(1) Ưu tiên làm thủ tục giao nhận và kiểm tra giám sát trước tại cảng/kho bãi; (2) Hàng KTCN: được đưa về kho DN bảo quản trong khi chờ kết quả KT chuyên ngành; (3) Miễn KSTQ tại trụ sở HQ đối với DN ưu tiên loại 1"},
+      {k:"Điều kiện tuân thủ HQ & thuế (Điều 10 khoản 1)",v:"Không vi phạm: trốn thuế, buôn lậu, hàng cấm, VCTP; không bị xử phạt vượt thẩm quyền Đội trưởng HQ. Phạm vi đánh giá: 24 tháng liên tục tính đến ngày đề nghị áp dụng"},
+      {k:"Điều kiện kế toán, kiểm toán (Điều 10 khoản 2)",v:"Áp dụng chuẩn mực kế toán theo BTC. BCTC hàng năm được kiểm toán bởi công ty kiểm toán hợp lệ với ý kiến chấp nhận toàn phần (không chấp nhận có ngoại lệ). Phạm vi: 24 tháng liên tục"},
+      {k:"Điều kiện kim ngạch XNK (Điều 10 khoản 4)",v:"Tối thiểu 100 triệu USD/năm (DN XNK chung). Hoặc 40 triệu USD/năm (DN sản xuất tại VN). Hoặc 30 triệu USD/năm (nông sản, thủy sản sản xuất/nuôi trồng tại VN). Tính bình quân 24 tháng liên tục"},
+      {k:"Điều kiện kiểm soát nội bộ (Điều 10 khoản 3)",v:"Phải xây dựng hệ thống KSNB gồm: lưu trữ hồ sơ HQ, tự đánh giá nội bộ, an ninh hàng hóa, an ninh vận tải, an ninh CNTT, an ninh nhân sự, an ninh đối tác TM. Không phát sinh tiền thuế nợ tại thời điểm đánh giá"}
+    ]},
+    {nhom:"Đánh giá tuân thủ & phân loại rủi ro – Điều 13-15 (46VBHN)",icon:"bar-chart-2",items:[
+      {k:"Tiêu chí đánh giá tuân thủ (Điều 14)",v:"(1) Tần suất vi phạm pháp luật HQ và thuế; (2) Tính chất, mức độ vi phạm; (3) Mức độ hợp tác với HQ trong TTHQ, kiểm tra, giám sát và chấp hành các quyết định HQ. Kết quả đánh giá → áp dụng biện pháp quản lý phù hợp"},
+      {k:"Yếu tố phân loại rủi ro (Điều 15)",v:"(1) Chính sách quản lý & thuế đối với hàng hóa; (2) Tính chất, đặc điểm hàng hóa; (3) Tần suất, mức độ vi phạm; (4) Xuất xứ hàng hóa; (5) Tuyến đường, phương thức vận chuyển; (6) Các yếu tố khác. Phân thành các mức độ khác nhau để áp dụng biện pháp quản lý phù hợp"}
+    ]},
+    {nhom:"Trị giá hải quan – Điều 20-21 (46VBHN)",icon:"dollar-sign",items:[
+      {k:"Trị giá HQ hàng XK (Điều 20)",v:"= Giá bán tính đến CỬA KHẨU XUẤT, không bao gồm phí bảo hiểm quốc tế và phí vận tải quốc tế. CK xuất: cảng xếp hàng (đường biển/HK), ga đường sắt liên vận (đường sắt), cửa khẩu biên giới (đường bộ/thủy nội địa)"},
+      {k:"Trị giá HQ hàng NK – 6 phương pháp (Điều 20)",v:"= Giá thực tế phải trả tính đến CỬA KHẨU NHẬP ĐẦU TIÊN. Áp dụng theo trình tự: (1) Trị giá giao dịch; (2) Hàng giống hệt; (3) Hàng tương tự; (4) Khấu trừ; (5) Tính toán; (6) Suy luận. Có thể hoán đổi PP4 và PP5 nếu người khai đề nghị bằng văn bản"},
+      {k:"CK nhập đầu tiên (Điều 20)",v:"Đường biển/HK: cảng dỡ hàng ghi trên vận đơn. Đường sắt: ga liên vận quốc tế ghi trên TK. Đường bộ/thủy nội địa: CK biên giới nơi hàng đi vào VN. Hàng từ khu phi thuế quan vào nội địa: điểm ngăn cách giữa KPTQ và nội địa"},
+      {k:"Kiểm tra, bác bỏ trị giá (Điều 21)",v:"Đủ cơ sở bác bỏ → thông báo, đề nghị khai bổ sung trong tối đa 5 ngày làm việc. Nghi vấn trị giá → thông báo nghi vấn + mức giá dự kiến + giải phóng hàng → tham vấn. Sau tham vấn: người khai đồng ý → khai bổ sung trong 5 ngày; bác bỏ → khai bổ sung trong 5 ngày hoặc HQ ấn định. Không bác bỏ/nghi vấn → chấp nhận trị giá khai báo"}
+    ]},
+    {nhom:"Khai & xử lý tờ khai HQ – Điều 25-27 (46VBHN)",icon:"monitor",items:[
+      {k:"Khai điện tử là bắt buộc (Điều 25)",v:"Khai HQ thực hiện theo phương thức ĐIỆN TỬ. Trường hợp được khai tờ khai giấy: hành lý vượt miễn thuế; hàng QP-AN; ngoại giao; hệ thống sự cố. Hệ thống HQ sự cố → HQ thông báo trên website trong 1 giờ; hệ thống người khai sự cố → DN gửi văn bản đề nghị Chi cục HQ khu vực"},
+      {k:"Tờ khai một lần (Điều 25 khoản 8)",v:"Áp dụng khi: thường xuyên XNK mặt hàng nhất định, cùng HĐ mua bán, cùng người mua/bán, qua cùng CK, trong khoảng thời gian nhất định. TK 1 lần mất hiệu lực khi: thay đổi chính sách thuế HOẶC chính sách quản lý hàng hóa"},
+      {k:"Hệ thống HQ tiếp nhận 24/7 (Điều 26)",v:"Hệ thống XLDL điện tử HQ tiếp nhận, kiểm tra, đăng ký, xử lý TK 24 giờ/ngày, 7 ngày/tuần. Nếu không chấp nhận đăng ký: hệ thống thông báo tự động + nêu rõ lý do. Nếu chấp nhận: hệ thống cấp số TK + phản hồi phân luồng"},
+      {k:"Phân luồng TK (Điều 26 khoản 4)",v:"Luồng 1 (Xanh): chấp nhận thông tin khai → thông quan. Luồng 2 (Vàng): kiểm tra chứng từ hồ sơ + Cổng 1 cửa QG → thông quan. Luồng 3 (Đỏ): kiểm tra thực tế hàng hóa trên cơ sở kiểm tra hồ sơ → thông quan. Phân luồng theo tiêu chí QLRR của Cục trưởng Cục HQ"},
+      {k:"Giải phóng hàng 4 trường hợp (Điều 32)",v:"(1) Phải phân tích/giám định mã HS/SL/TL; (2) Chưa có giá chính thức + đã nộp thuế tạm hoặc bảo lãnh; (3) Đang tham vấn trị giá + đã nộp thuế tạm hoặc bảo lãnh; (4) Chưa đủ thông tin xác định trị giá + được tổ chức tín dụng bảo lãnh thuế"}
+    ]},
+    {nhom:"Gia công, SXXK – Điều 36-41 (46VBHN)",icon:"factory",items:[
+      {k:"Thông báo cơ sở SX (Điều 37 khoản 1)",v:"TRƯỚC KHI làm TT nhập khẩu lô NVL ĐẦU TIÊN phải thông báo cơ sở GC/SX + nơi lưu giữ NVL/máy móc/sản phẩm lên Hệ thống. Thay đổi địa chỉ/quy mô/người đại diện → thông báo ngay. Cơ quan HQ tiếp nhận VB thông báo (không cần phê duyệt trước)"},
+      {k:"Kiểm tra cơ sở SX (Điều 39)",v:"Bắt buộc kiểm tra khi: lần đầu NK GC/SXXK; thay đổi TT không thông báo; thuê GC lại toàn bộ; lưu giữ NVL ngoài địa điểm đã thông báo. Trong 5 ngày sau DN nhận QĐ → thực hiện KT; thời gian KT ≤ 5 ngày. 6 nội dung KT: địa chỉ, ngành nghề, nhà xưởng máy móc, nhân lực, quy trình SX, theo dõi NVL/SP"},
+      {k:"Kiểm tra tồn kho NVL (Điều 40)",v:"Kiểm tra khi: quá chu kỳ SX không có SP XK; NK/XK tăng giảm bất thường so với năng lực; bán NVL vào nội địa không khai HQ; khai SP XK sai thực tế. Thời gian KT ≤ 5 ngày. KT: hồ sơ HQ, báo cáo nhập-xuất-tồn, định mức thực tế, NVL trên dây chuyền, tồn kho, thành phẩm chưa XK"},
+      {k:"Báo cáo quyết toán (Điều 41)",v:"Báo cáo theo hình thức NHẬP – XUẤT – TỒN về NVL, vật tư, máy móc thiết bị và hàng hóa XK. HQ tiếp nhận báo cáo, áp dụng QLRR để kiểm tra hồ sơ; có dấu hiệu gian lận → kiểm tra thực tế. Tổ chức/cá nhân chịu trách nhiệm pháp lý về tính chính xác của định mức thực tế"},
+      {k:"Phối hợp kiểm tra chuyên ngành (Điều 33)",v:"KTCN thực hiện ĐỒNG THỜI tại CK hoặc địa điểm kiểm tra tập trung (không chờ TQ rồi mới kiểm). Cơ quan KTCN thông báo kết quả trên Cổng 1 cửa QG cho HQ và người khai trong 2 ngày làm việc sau khi KT xong. Nếu chưa có trên Cổng: HQ tiếp nhận bản chụp thông báo kết quả"}
+    ]},
+    {nhom:"Kiểm tra sau thông quan – Điều 97-100 (46VBHN)",icon:"search",items:[
+      {k:"Thẩm quyền KSTQ tại trụ sở DN (Điều 98)",v:"Cục trưởng Cục HQ: KT DN ưu tiên, dự án trọng điểm quốc gia. Chi cục trưởng Chi cục KSTQ: KT toàn quốc. Chi cục trưởng Chi cục HQ khu vực: KT DN có trụ sở/MST thuộc địa bàn. Phát hiện vi phạm DN ngoài địa bàn → báo cáo Cục HQ quyết định phân công"},
+      {k:"Trình tự kết luận KSTQ tại trụ sở DN (Điều 98)",v:"Sau KT: trong 5 ngày → dự thảo kết luận; trong 10 ngày → DN giải trình bằng VB hoặc trực tiếp; trong 15 ngày → ký ban hành kết luận chính thức. Cần xin ý kiến chuyên môn: gửi VB trong 15 ngày; cơ quan CM phản hồi trong 30 ngày"},
+      {k:"Tạm dừng/hủy QĐ KSTQ (Điều 99)",v:"Tạm dừng TRƯỚC KHI KT: DN đang chịu KT/thanh tra/điều tra của HQ/thuế/thanh tra/kiểm toán/công an; bất khả kháng. Tạm dừng TRONG KHI KT: xác minh bên liên quan; bất khả kháng; DN đề nghị xử lý sự cố. Thời gian tạm dừng không tính vào thời gian KT. Hủy QĐ: DN đã bỏ trốn/giải thể/phá sản/ngừng HĐ"},
+      {k:"Trình tự tổng thể KSTQ (Điều 100)",v:"(1) Ban hành QĐ KT: gửi trong 3 ngày sau ký, chậm nhất 5 ngày trước KT (gửi trực tiếp/bảo đảm/fax/email); (2) Công bố QĐ + ký biên bản công bố xác định thời điểm bắt đầu; (3) Lập biên bản KT, biên bản làm việc, biên bản giao nhận; (4) Dự thảo KL → giải trình → kết luận chính thức; (5) Xử lý: ấn định thuế, XPVP, cưỡng chế, cập nhật hệ thống"}
+    ]}
+  ],
+  ghi_chu:"Hợp nhất NĐ 08/2015 + NĐ 18/2021 + NĐ 167/2025. NĐ 59/2018 đã bị bãi bỏ.",mau:"primary",thu_tu:2,lien_ket:["54VBHN","TT38","21VBHN"]},
+  {id:"TT38",ky_hieu:"TT 38/2015 + TT 39/2018 + TT 121/2025",ten:"Thủ tục hải quan, kiểm tra, giám sát (đọc kết hợp)",co_quan:"Bộ Tài chính",hieu_luc:"01/02/2026 (TT 121)",loai:"Thông tư",cap:"Thông tư",nhom:["hai_quan","tat_ca"],tinh_huong:["khai_bao","kiem_tra_ho_so","phap_ly"],
+  dieu_tiet:["Điều 16 – Hồ sơ HQ NK: Tờ khai + Invoice + Vận đơn B/L + Giấy phép + Kết quả KTCN + Tờ khai trị giá + C/O","Điều 3 – Miễn nộp chứng từ đã cấp trên Cổng 1 cửa QG / Cổng DVCTT (số hóa 100% hồ sơ)","Điều 6 – Dùng tài khoản VNeID để đăng ký kết nối hệ thống VNACCS/VCIS","Điều 20 – Khai bổ sung: HQ xử lý trong 2 giờ làm việc; người khai có 5 ngày làm việc để nộp hồ sơ","Điều 22 – Hủy tờ khai: hết hiệu lực sau 15 ngày nếu không có hàng đến / chưa xuất trình hồ sơ","Điều 35 – Tỷ giá tính thuế: tỷ giá mua vào Vietcombank HQ, cập nhật cuối ngày thứ Năm hàng tuần","Tham vấn trị giá 1 lần – nhiều lô: hiệu lực 6 tháng, áp dụng tại 1 Chi cục HQ (TT121)","Khai bổ sung hàng rời/xá (mua xô/bán xô): quy trình riêng theo dung sai hợp đồng (TT121)","TT121 bãi bỏ: TT 72/2015 (chế độ ưu tiên DN), TT 07/2019, và điều khoản TT 06/2021, TT 47/2025"],
+  chi_tiet:[
+    {nhom:"Hồ sơ hải quan – Điều 16 (TT121)",icon:"file-text",items:[
+      {k:"Hồ sơ NK bắt buộc",v:"Tờ khai HQ + Invoice (nếu có TT) + Vận đơn B/L (tên/địa chỉ người gửi-nhận; tên hàng, SL, TL; cảng xếp-dỡ) + Giấy phép NK + Kết quả KTCN + Tờ khai trị giá + C/O (nếu hưởng FTA)"},
+      {k:"Hồ sơ XK bắt buộc",v:"Tờ khai HQ + Invoice (nếu có TT) + Giấy phép XK + Kết quả KTCN + Hợp đồng ủy thác (nếu ủy thác XK hàng cần GP/KTCN)"},
+      {k:"Miễn nộp B/L",v:"Hàng gia công cho thương nhân nước ngoài. Hàng phục vụ thăm dò dầu khí trên tàu dịch vụ (dùng Cargo Manifest thay thế)"},
+      {k:"Miễn nộp Invoice",v:"Hàng gia công cho thương nhân nước ngoài. Hàng NK không có Invoice và người mua không phải thanh toán"},
+      {k:"Lưu giữ hồ sơ (Điều 16a)",v:"Lưu tối thiểu 5 năm kể từ ngày đăng ký tờ khai, dưới dạng điện tử hoặc bản giấy tại trụ sở DN"}
+    ]},
+    {nhom:"Đăng ký hệ thống & khai báo – Điều 6 (TT121)",icon:"monitor",items:[
+      {k:"Tài khoản VNeID",v:"Tổ chức/cá nhân được dùng tài khoản VNeID để đăng ký tham gia kết nối với hệ thống VNACCS/VCIS (thay cho tài khoản riêng trước đây)"},
+      {k:"Yêu cầu hạ tầng",v:"Trang bị đầy đủ hạ tầng kỹ thuật giao dịch điện tử; sử dụng phần mềm khai HQ được cấp phép; cập nhật khi có thay đổi thông tin kết nối"},
+      {k:"Khai tờ khai giấy",v:"Chỉ áp dụng khi hệ thống điện tử gặp sự cố hoặc theo quy định đặc biệt; phải nộp 02 bản chính; lưu trữ theo quy định lưu trữ chứng từ giấy"}
+    ]},
+    {nhom:"Khai bổ sung & hủy tờ khai – Điều 20, 22 (TT121)",icon:"edit-3",items:[
+      {k:"Khai bổ sung thông thường",v:"Nộp qua Hệ thống điện tử. HQ xử lý trong 2 giờ làm việc kể từ khi nhận đủ hồ sơ. Người khai có 5 ngày làm việc kể từ ngày nhận yêu cầu của HQ để nộp hồ sơ bổ sung"},
+      {k:"Cửa sổ khai bổ sung sau TQ",v:"60 ngày kể từ ngày thông quan (quy định gốc TT38). Quá hạn bị ấn định thuế + xử lý vi phạm. Khai bổ sung làm thay đổi thuế → ấn định thuế và XLVP. Không thay đổi thuế → chỉ XLVP"},
+      {k:"Khai bổ sung hàng rời/xá",v:"Hàng mua bán nguyên lô có thỏa thuận dung sai: kèm HĐ có nội dung thỏa thuận dung sai + GP đã điều chỉnh (nếu hàng có GP). Quá 30 ngày không điều chỉnh GP → phải tái xuất lượng chênh lệch"},
+      {k:"Khai bổ sung sai số hiệu container",v:"Xuất trình chứng từ giao nhận; khai bổ sung tại HQ nơi đăng ký TK trong 5 ngày làm việc kể từ ngày hàng qua khu vực giám sát"},
+      {k:"Hủy tờ khai tự động",v:"Hết hiệu lực sau 15 ngày nếu: (1) không có hàng NK đến cửa khẩu, (2) chưa nộp hồ sơ HQ, (3) chưa xuất trình hàng để KTTC"},
+      {k:"Hủy tờ khai theo đề nghị",v:"HQ chưa TQ do sự cố hệ thống; hàng XK vào giám sát nhưng thực tế không xuất; hàng NK chưa qua giám sát và thực tế không nhập; khai sai chỉ tiêu nhóm 3 Phụ lục II"}
+    ]},
+    {nhom:"Trị giá & tỷ giá tính thuế – Điều 35 (TT121)",icon:"dollar-sign",items:[
+      {k:"Tỷ giá tính thuế",v:"Tỷ giá mua vào (chuyển khoản) Vietcombank Hội sở chính, lấy tại thời điểm cuối ngày thứ Năm hàng tuần. Cục HQ phối hợp VCB để cập nhật lên hệ thống"},
+      {k:"Ngoại tệ không có tỷ giá VCB",v:"Dùng tỷ giá NHNN Việt Nam công bố mới nhất trước thời điểm cập nhật"},
+      {k:"Tham vấn trị giá 1 lần – nhiều lô",v:"Điều kiện: DN mức tuân thủ cao trở lên, đề nghị bằng văn bản. Hiệu lực: 6 tháng kể từ ngày ban hành TB trị giá. Phạm vi: chỉ áp dụng tại 1 Chi cục HQ nơi đăng ký tờ khai"},
+      {k:"Thuế tự vệ / CBPG / CTC",v:"Nộp NSNN trong thời hạn theo QĐ của Bộ Công Thương. Số tiền nộp thừa theo QĐ tạm thời sẽ được hoàn lại sau khi có QĐ chính thức"}
+    ]},
+    {nhom:"Xác định trước mã số (TT121)",icon:"tag",items:[
+      {k:"Hồ sơ đề nghị",v:"Mẫu 01/XĐTMS/NVTHQ (Phụ lục VI) + Tài liệu kỹ thuật (phân tích thành phần, catalogue, hình ảnh) + Mẫu hàng (nếu có). Nộp qua Hệ thống điện tử"},
+      {k:"Kết quả xác định trước",v:"TB kết quả: Mẫu 01a-TB XDTMS | TB sửa đổi/thay thế: Mẫu 01b | TB hủy: Mẫu 01c. HQ có văn bản yêu cầu bổ sung nếu hồ sơ chưa đủ cơ sở xác định tên gọi/mã số"}
+    ]},
+    {nhom:"Văn bản bãi bỏ bởi TT121 – Điều 2",icon:"trash-2",items:[
+      {k:"Bãi bỏ toàn bộ",v:"TT 24/2012/TT-BTC; TT 72/2015/TT-BTC (chế độ ưu tiên DN XNK); TT 07/2019/TT-BTC; QĐ 1200/2001/QĐ-TCHQ"},
+      {k:"Bãi bỏ một phần",v:"TT 39/2015 (điểm d.3.2.3 khoản 2 Điều 15); TT 06/2021 (khoản 4 Điều 12; điểm c.4 khoản 1-2 Điều 14; mẫu 03 và 14); TT 47/2025 (Điều 2)"},
+      {k:"Bãi bỏ mẫu biểu",v:"Mẫu 01-04/ĐKDMTB/2015 ban hành kèm TT 14/2015 (đăng ký danh mục thiết bị)"}
+    ]},
+    {nhom:"Kiểm tra tên hàng, mã HS & trị giá – Điều 23-25 (TT38 gốc)",icon:"search",items:[
+      {k:"Nguyên tắc kiểm tra (Điều 23)",v:"Kiểm tra căn cứ kết quả phân luồng hoặc quyết định của Chi cục trưởng. Phát hiện dấu hiệu vi phạm trong quá trình kiểm tra → báo cáo mở rộng phạm vi. Chi phí trưng cầu giám định phục vụ kiểm tra do cơ quan HQ chi trả"},
+      {k:"Kiểm tra mã HS – khi kiểm tra hồ sơ (Điều 24)",v:"Đối chiếu tên hàng, mã số, mức thuế trên TK với chứng từ. Khai phù hợp → thông qua. Khai sai → yêu cầu khai bổ sung. Chưa xác định được → yêu cầu nộp thêm chứng từ kỹ thuật hoặc trưng cầu giám định"},
+      {k:"Kiểm tra mã HS – khi KTTC (Điều 24)",v:"Đối chiếu tên hàng, mã số khai với thực tế hàng hóa theo tiêu chí Danh mục hàng hóa XNK Việt Nam và Biểu thuế. Không xác định được tại hiện trường → lấy mẫu giám định; trong thời gian chờ có thể giải phóng hàng nếu đáp ứng điều kiện"},
+      {k:"Kiểm tra trị giá (Điều 25)",v:"HQ kiểm tra trị giá khai báo, bác bỏ nếu: không kê khai/kê khai không đúng chỉ tiêu trị giá; giá khai thấp hơn cơ sở dữ liệu HQ cùng mặt hàng, cùng điều kiện. Nếu bác bỏ → tiến hành tham vấn theo trình tự 6 phương pháp xác định trị giá"},
+      {k:"Xem hàng, lấy mẫu trước khai (Điều 17)",v:"Sau khi được chủ hàng/hãng tàu/kho bãi đồng ý, Chi cục HQ lập biên bản 02 bản (mỗi bên 1 bản), có xác nhận chủ hàng. Sau khi xem/lấy mẫu phải niêm phong lại lô hàng. Lấy mẫu để khai hải quan thực hiện theo Điều 31"}
+    ]},
+    {nhom:"Giải phóng hàng, thời điểm & thời hạn nộp thuế – Điều 33, 35, 42 (TT38 gốc)",icon:"clock",items:[
+      {k:"Giải phóng hàng (Điều 33)",v:"Áp dụng khi: (1) Chưa có giá chính thức – nộp thuế tạm hoặc bảo lãnh, trong 30 ngày phải khai bổ sung trị giá; (2) Chờ kết quả giám định/phân loại – nộp thuế tạm hoặc bảo lãnh. Khác với THÔNG QUAN: hàng được đưa ra nhưng chưa kết thúc nghĩa vụ HQ"},
+      {k:"Thời điểm tính thuế (Điều 35 khoản 1)",v:"Là NGÀY ĐĂNG KÝ TỜ KHAI HQ. Áp dụng cho thuế XK, NK, thuế tự vệ, CBPG, CTC. Quan trọng khi mức thuế thay đổi hoặc hàng hóa đăng ký TK trước rồi mới nhập về"},
+      {k:"Đồng tiền nộp thuế (Điều 41)",v:"Nộp bằng VND. Ngoại tệ tự do chuyển đổi cũng được; tỷ giá quy đổi theo quy định tại thời điểm nộp. Hàng chưa có giá chính thức: tạm nộp thuế theo giá khai báo; khi có giá chính thức nộp bổ sung hoặc hoàn trả phần chênh lệch"},
+      {k:"Thời hạn nộp thuế – NVL SXXK (Điều 42 khoản 1)",v:"275 ngày nếu đủ ĐK: (a) Có cơ sở SX trên lãnh thổ VN (quyền SD mặt bằng + máy móc thiết bị); (b) XNK liên tục ≥2 năm, không bị xử lý buôn lậu/trốn thuế/gian lận TM; (c) Không nợ thuế quá hạn; (d) Không bị xử phạt kế toán/2 năm; (e) Thanh toán qua ngân hàng"},
+      {k:"Thời hạn nộp thuế – Tạm nhập tái xuất (Điều 42 khoản 2)",v:"Phải nộp thuế NK TRƯỚC KHI hoàn thành thủ tục tạm nhập (hoặc bảo lãnh). Tái xuất trong thời hạn bảo lãnh → hoàn thuế. Tái xuất quá hạn bảo lãnh → phải nộp tiền chậm nộp. Chuyển tiêu thụ nội địa → nộp đủ thuế trước khi chuyển"},
+      {k:"Thời hạn nộp thuế – Hàng thông thường (Điều 42 khoản 3)",v:"Trường hợp thông thường (không phải SXXK, không phải tạm nhập TXT): nộp trước khi thông quan hoặc trong thời hạn bảo lãnh tối đa 30 ngày kể từ ngày đăng ký TK. Quá hạn → tiền chậm nộp"}
+    ]},
+    {nhom:"Tạm nhập tái xuất – Điều 82-84 (TT38 gốc)",icon:"refresh-cw",items:[
+      {k:"Địa điểm lưu giữ hàng TNTX",v:"Chỉ được lưu tại: kho ngoại quan tại cửa khẩu tạm nhập; cảng nội địa (ICD) do Chi cục HQ cửa khẩu nhập quản lý; điểm thông quan, địa điểm tập kết biên giới theo quy định"},
+      {k:"Không được chia nhỏ container",v:"Cấm chia nhỏ container trong toàn bộ quá trình vận chuyển từ cửa khẩu TN đến địa điểm tái xuất. Muốn thay đổi/chia nhỏ: phải có văn bản đề nghị + được Chi cục trưởng HQ cửa khẩu TXT chấp thuận; phải đảm bảo niêm phong HQ"},
+      {k:"Cửa khẩu TXT ≠ cửa khẩu TN",v:"Chi cục HQ cửa khẩu tạm nhập niêm phong hàng trước khi giao cho người khai vận chuyển ra cửa khẩu TXT. Hàng phải tập kết đầy đủ tại khu vực giám sát HQ trước khi TXT"},
+      {k:"Theo dõi tờ khai (Điều 84)",v:"Chi cục HQ nơi TN theo dõi lượng hàng trên Hệ thống. Sau TXT: người khai làm thủ tục hoàn thuế/không thu thuế cho TK tạm nhập tại Chi cục HQ nơi làm thủ tục TN"},
+      {k:"Hoàn thuế tạm nhập TXT",v:"Chỉ được hoàn thuế sau khi hàng đã THỰC XUẤT ra nước ngoài (không phải khi đã làm thủ tục TXT). Hàng gửi kho ngoại quan chờ TXT: hoàn thuế sau khi hàng thực xuất, không phải khi vào kho"}
+    ]},
+    {nhom:"XNK tại chỗ & chuyển khẩu – Điều 86, 89 (TT38 gốc)",icon:"arrow-left-right",items:[
+      {k:"Hàng XNK tại chỗ – 3 loại (Điều 86)",v:"(1) Sản phẩm GC; máy móc TB thuê mượn; NVL dư thừa, phế liệu trong hợp đồng GC; (2) Hàng mua bán giữa DN nội địa với DNCX/khu phi thuế quan; (3) Hàng mua bán với TN nước ngoài không hiện diện tại VN, chỉ định giao nhận tại VN"},
+      {k:"Thủ tục XNK tại chỗ (Điều 86)",v:"Làm tại Chi cục HQ thuận tiện do người khai lựa chọn. Hồ sơ theo Điều 16 + hóa đơn GTGT/hóa đơn bán hàng (hàng DNCX/phi thuế quan). Người NK tại chỗ: làm thủ tục NK trong 15 ngày làm việc kể từ ngày TQ hàng XK tại chỗ"},
+      {k:"Chuyển khẩu (Điều 89)",v:"Vận chuyển thẳng nước XK→nước NK không qua cửa khẩu VN: KHÔNG phải làm thủ tục HQ. Có đưa vào kho bãi cảng biển VN (không qua kho ngoại quan, không vào khu phi thuế): làm thủ tục theo quy định chuyển khẩu"}
+    ]},
+    {nhom:"Từ chối nhận hàng & vận hành HQ – Điều 4, 8, 95-96 (TT38 gốc)",icon:"x-circle",items:[
+      {k:"Thủ tục HQ ngoài giờ (Điều 4)",v:"HQ làm việc ngày nghỉ/lễ/ngoài giờ để đảm bảo xếp dỡ hàng XNK kịp thời. Đang kiểm tra mà hết giờ → tiếp tục kiểm tra cho đến xong, không yêu cầu người khai làm gì thêm. Cửa khẩu biên giới đất liền: theo thời gian đóng mở cửa khẩu"},
+      {k:"Đánh giá tuân thủ DN (Điều 8)",v:"3 mức: (1) Doanh nghiệp ưu tiên; (2) Doanh nghiệp tuân thủ; (3) Doanh nghiệp không tuân thủ. Mức đánh giá ảnh hưởng trực tiếp đến phân luồng tờ khai và chế độ kiểm tra sau thông quan. HQ cung cấp thông tin và hỗ trợ DN nâng cao năng lực tuân thủ"},
+      {k:"Từ chối nhận hàng (Điều 95-96)",v:"Được từ chối khi: hàng không phù hợp HĐ mua bán (theo Điều 39 Luật TM); hoặc không phù hợp HĐ thuê kho ngoại quan. Từ chối TRƯỚC khi có kết quả phân luồng TK → không bị xử phạt. Từ chối SAU thời điểm này → bị xử lý vi phạm"},
+      {k:"Xử lý hàng từ chối nhận (Điều 96)",v:"Nộp hồ sơ cho HQ: văn bản từ chối nêu lý do + đề xuất phương án (tái xuất/tiêu hủy/tịch thu đấu giá) + chứng từ chứng minh. HQ kiểm tra toàn bộ lô hàng rồi xử lý. Chi phí tiêu hủy trích từ tiền ký quỹ của người nhận hàng hoặc chủ kho ngoại quan"}
+    ]},
+        {nhom:"Phân luồng tờ khai – Điều 10 (TT39 còn hiệu lực)",icon:"git-branch",items:[
+      {k:"Luồng 1 (Xanh)",v:"Hệ thống chấp nhận thông tin khai – không kiểm tra hồ sơ, không kiểm tra thực tế. Hàng được thông quan ngay khi hoàn thành nghĩa vụ thuế"},
+      {k:"Luồng 2 (Vàng)",v:"Kiểm tra hồ sơ chứng từ do người khai nộp/xuất trình hoặc tra cứu trên Cổng 1 cửa QG. Thông quan sau khi HQ xác nhận hồ sơ hợp lệ"},
+      {k:"Luồng 3 (Đỏ)",v:"Kiểm tra thực tế hàng hóa trên cơ sở kiểm tra hồ sơ. Hàng chỉ được thông quan sau khi KTTC xong và HQ xác nhận phù hợp"},
+      {k:"Cơ sở phân luồng",v:"Hệ thống tự động phân luồng theo tiêu chí quản lý rủi ro do Bộ Tài chính quy định. Phân luồng có thể thay đổi sau khi đăng ký tờ khai nếu thông tin rủi ro cập nhật thêm khi hàng đến cửa khẩu"},
+      {k:"Kiểm tra chuyên ngành",v:"Thực hiện độc lập theo pháp luật chuyên ngành; nếu KTCN yêu cầu KTTC toàn bộ lô hàng thì thực hiện KTTC bất kể luồng nào được phân"}
+    ]},
+    {nhom:"Khai báo tờ khai – Điều 18 (TT39 còn hiệu lực)",icon:"file-plus",items:[
+      {k:"1 vận đơn / 1 tờ khai",v:"Nguyên tắc: 1 vận đơn khai trên 1 tờ khai HQ nhập khẩu. Trường hợp 1 vận đơn cần khai nhiều tờ khai hoặc ngược lại: thực hiện theo hướng dẫn riêng của HQ"},
+      {k:"Khai số hiệu container",v:"Hàng XK vận chuyển bằng container phải khai đầy đủ số hiệu container khi đăng ký tờ khai XK. Hàng nhiều tờ khai đóng chung container phải thông báo cho HQ cửa khẩu"},
+      {k:"Giấy phép – thời điểm khai",v:"Hàng thuộc diện phải có giấy phép: phải có GP tại thời điểm đăng ký tờ khai và khai đầy đủ thông tin GP trên tờ khai điện tử"},
+      {k:"Hàng gia công / SXXK",v:"Khai mã sản phẩm xuất khẩu trên tờ khai NK nguyên liệu, vật tư. Hàng hóa là phương tiện vận tải (tàu, máy bay, toa xe): hoàn thành thủ tục XK trước khi làm thủ tục xuất cảnh"},
+      {k:"Hàng gửi nhầm / gửi thừa",v:"Thực hiện khai bổ sung theo Điều 20 hoặc từ chối nhận hàng theo quy định; không được tự ý lưu giữ hàng gửi nhầm/thừa mà không khai báo"}
+    ]},
+    {nhom:"Điều kiện đăng ký tờ khai & thông quan – Điều 19, 34 (TT39 còn hiệu lực)",icon:"check-circle",items:[
+      {k:"Điều kiện đăng ký TK",v:"Hệ thống tự động kiểm tra: (1) Không bị cưỡng chế dừng thủ tục HQ; (2) Không thuộc trường hợp bị từ chối theo Điều 14 TT38; (3) Thông tin TK đầy đủ, phù hợp; (4) Chính sách thuế và quản lý hàng hóa hợp lệ"},
+      {k:"Ngoại lệ cưỡng chế",v:"Cho phép đăng ký TK dù đang bị cưỡng chế nếu: (1) Hàng XK miễn thuế/0%; (2) Hàng phục vụ an ninh quốc phòng miễn thuế, không chịu VAT; (3) Hàng phòng chống thiên tai, cứu trợ khẩn cấp, viện trợ nhân đạo"},
+      {k:"Thông quan – nghĩa vụ thuế",v:"Hệ thống tự động kiểm tra việc hoàn thành nghĩa vụ thuế trước khi quyết định thông quan. Trường hợp HT không tự động kiểm tra được: nộp 01 bản chụp chứng từ nộp thuế (xuất trình bản chính đối chiếu)"}
+    ]},
+    {nhom:"Thay đổi mục đích sử dụng – Điều 21 khoản 1 (TT39 còn hiệu lực)",icon:"repeat",items:[
+      {k:"Nguyên tắc",v:"Chỉ được thực hiện SAU KHI hoàn thành thủ tục HQ tờ khai ban đầu. Phải đăng ký tờ khai HQ mới, ghi rõ số tờ khai ban đầu và hình thức thay đổi mục đích"},
+      {k:"Hàng cần giấy phép",v:"Khi thay đổi mục đích, nếu hàng thuộc diện cần giấy phép thì phải được cơ quan cấp GP đồng ý bằng văn bản trước khi thực hiện; nộp kèm văn bản này vào hồ sơ"},
+      {k:"Nghĩa vụ thuế",v:"Người nộp thuế phải kê khai, nộp đủ tiền thuế và tiền phạt (nếu có) theo quy định. Tự giác kê khai; nếu không tự giác và bị phát hiện sẽ bị xử lý theo pháp luật"},
+      {k:"Thay đổi bằng tái xuất",v:"Không phải nộp thuế NK. Hàng gia công/SXXK thay đổi bằng tái xuất: làm thủ tục XK theo quy định, không cần khai bổ sung (TT121 đã sửa khoản 2b)"}
+    ]},
+    {nhom:"Giấy phép XNK sử dụng nhiều lần – Điều 28 (TT39 còn hiệu lực)",icon:"layers",items:[
+      {k:"Lần đầu",v:"Nộp bản chính GP giấy hoặc cung cấp thông tin GP điện tử trên tờ khai. HQ thực hiện trừ lùi số lượng lô hàng đầu tiên và giữ lại GP"},
+      {k:"Lần tiếp theo",v:"HQ theo dõi trừ lùi trên Hệ thống. Nếu HT chưa hỗ trợ trừ lùi: Chi cục HQ theo dõi thủ công bằng Phiếu theo dõi trừ lùi kèm theo bộ hồ sơ"},
+      {k:"Xuất khẩu hết hạn mức",v:"Chi cục HQ nơi làm thủ tục lô hàng cuối cùng xác nhận và lưu Phiếu theo dõi trừ lùi kèm bộ hồ sơ tờ khai"}
+    ]},
+    {nhom:"Hoàn thuế & xử lý thuế nộp thừa – Điều 129, 131 (TT39 còn hiệu lực)",icon:"rotate-ccw",items:[
+      {k:"Hoàn thuế trước – KT sau",v:"Thời hạn giải quyết: 6 ngày làm việc kể từ ngày nhận đủ hồ sơ. Áp dụng cho DN có mức tuân thủ tốt, không trong các trường hợp bắt buộc KT trước"},
+      {k:"KT trước – hoàn thuế sau",v:"Thời hạn: 40 ngày làm việc. Áp dụng bắt buộc khi: vi phạm >2 lần/12 tháng; bị xử lý trốn thuế/gian lận trong 24 tháng; đang bị cưỡng chế; hàng chịu thuế TTĐB; hàng phải tái xuất/tái nhập"},
+      {k:"Hồ sơ hoàn thuế điện tử",v:"Khai theo mẫu số 01 Phụ lục IIa gửi qua Hệ thống HQ điện tử. HT tự động tiếp nhận, phân loại hồ sơ và phản hồi kết quả cho người nộp thuế"},
+      {k:"Xử lý thuế nộp thừa (Điều 131)",v:"Khai mẫu 03 Phụ lục IIa gửi qua Hệ thống. HQ xử lý trong 5 ngày làm việc kể từ ngày nhận công văn hợp lệ. Có thể hoàn trả tiền mặt hoặc bù trừ vào tờ khai tiếp theo theo đề nghị của người nộp thuế"}
+    ]},
+        {nhom:"Thông tin hiệu lực",icon:"calendar-check",items:[
+      {k:"Ngày hiệu lực",v:"01/02/2026"},
+      {k:"Ban hành",v:"18/12/2025 – Bộ trưởng Bộ Tài chính"},
+      {k:"Phạm vi sửa đổi",v:"Sửa đổi/bổ sung 60+ điều của TT 38/2015 và TT 39/2018; đồng thời điều chỉnh một phần TT 39/2015, TT 06/2021, TT 47/2025"}
+    ]}
+  ],
+  ghi_chu:"Chưa có VBHN chính quy tích hợp TT 121/2025. Phải đọc cả 3 thông tư.",mau:"secondary",thu_tu:3,lien_ket:["46VBHN","21VBHN"]},
+  {id:"21VBHN",ky_hieu:"21/VBHN-BTC",ten:"Trị giá hải quan hàng hóa XNK (Văn bản hợp nhất)",co_quan:"Bộ Tài chính",hieu_luc:"23/04/2020",loai:"VBHN",cap:"Thông tư",nhom:["hai_quan","tat_ca"],tinh_huong:["khai_bao","phap_ly","kiem_tra_sau_thong_quan"],dieu_tiet:["PP1: Trị giá giao dịch (ưu tiên – dựa trên invoice)","PP2–3: Hàng giống hệt / tương tự","PP4: Phương pháp khấu trừ","PP5: Phương pháp tính toán","PP6: Phương pháp suy luận","Điều chỉnh trị giá theo Incoterms (CIF/FOB/EXW)","Hồ sơ chứng minh khi bị tham vấn giá trị"],chi_tiet:[
+    {nhom:"Nguyên tắc chung & trị giá hàng XK – Điều 3-5 (21VBHN)",icon:"info",items:[
+      {k:"Quyền người khai (Điều 3)",v:"Được tự khai báo và xác định trị giá HQ. Được giải thích, hướng dẫn về phương pháp xác định trị giá. Được khiếu nại kết quả xác định trị giá của HQ. Được áp dụng nguyên tắc tham vấn trước khi HQ bác bỏ trị giá"},
+      {k:"Nghĩa vụ người khai (Điều 3)",v:"Khai báo trung thực, chính xác trị giá hải quan. Nộp tờ khai trị giá kèm hồ sơ khi bắt buộc. Cung cấp chứng từ, tài liệu liên quan khi HQ yêu cầu. Chịu trách nhiệm trước pháp luật về nội dung khai báo"},
+      {k:"Nguyên tắc trị giá XK (Điều 4)",v:"= Giá bán tính đến CỬA KHẨU XUẤT, không bao gồm phí bảo hiểm quốc tế (I) và phí vận tải quốc tế (F). Phải căn cứ chứng từ, tài liệu, số liệu KHÁCH QUAN và ĐỊNH LƯỢNG ĐƯỢC. Áp dụng tuần tự các phương pháp theo quy định"},
+      {k:"Trị giá XK khi giao hàng trong nội địa (Điều 4)",v:"Nếu giao hàng tại địa điểm trong nội địa VN: trị giá = giá bán trên HĐ/Invoice + phí vận tải nội địa đến CK xuất + phí bảo hiểm đến CK xuất + chi phí khác đến CK xuất. Chứng từ: HĐ mua bán/Invoice + CT phí vận tải nội địa"},
+      {k:"Nguyên tắc trị giá NK (Điều 5)",v:"= Giá thực tế phải trả tính đến CỬA KHẨU NHẬP ĐẦU TIÊN. Áp dụng tuần tự 6 phương pháp theo thứ tự bắt buộc (PP4 và PP5 có thể hoán đổi theo đề nghị bằng văn bản của người khai). Mỗi PP chỉ áp dụng khi PP trước không xác định được"}
+    ]},
+    {nhom:"PP1 – Trị giá giao dịch & quan hệ đặc biệt – Điều 6-7 (21VBHN)",icon:"shopping-cart",items:[
+      {k:"Trị giá giao dịch (Điều 6)",v:"= Giá thực tế đã TT hay sẽ phải TT (gồm: giá mua trên Invoice + các khoản chưa tính vào Invoice + các khoản điều chỉnh cộng theo Điều 13 – trừ các khoản điều chỉnh trừ theo Điều 14-15)"},
+      {k:"4 điều kiện áp dụng PP1 (Điều 6)",v:"(1) Người mua không bị hạn chế quyền định đoạt/sử dụng (trừ hạn chế do pháp luật VN, hạn chế nơi tiêu thụ, hạn chế khác không ảnh hưởng giá); (2) Giá cả không phụ thuộc điều kiện không định lượng được; (3) Sau bán lại/sử dụng không phải TT thêm (trừ khoản e Điều 13); (4) Không có quan hệ đặc biệt hoặc có nhưng không ảnh hưởng giá"},
+      {k:"Phần mềm + máy móc (Điều 6 khoản 5)",v:"NK máy móc kèm phần mềm điều khiển: trị giá HQ = trị giá máy móc + phần mềm (nếu không tách riêng). Trường hợp tách được: khai riêng từng phần. NK phương tiện trung gian chứa phần mềm ứng dụng dữ liệu: trị giá = chỉ tính phương tiện trung gian (bản thân), KHÔNG tính phần mềm"},
+      {k:"Quan hệ đặc biệt – 9 trường hợp (Điều 7)",v:"(1) Cùng nhân viên/giám đốc; (2) Thành viên góp vốn; (3) Chủ-người làm thuê; (4) Kiểm soát lẫn nhau; (5) Cùng bị bên thứ 3 kiểm soát; (6) Cùng kiểm soát bên thứ 3; (7) Quan hệ gia đình (vợ chồng, cha mẹ con, ông bà cháu, cô chú bác cháu, anh chị em); (8) Bên thứ 3 sở hữu ≥5% cổ phiếu biểu quyết; (9) Đại lý/nhà phân phối/nhà chuyển nhượng độc quyền"},
+      {k:"Quan hệ đặc biệt không ảnh hưởng giá (Điều 7)",v:"Chấp nhận nếu thỏa 1 trong 2: (a) Giao dịch diễn ra như với người không có QHĐB (giá đàm phán phù hợp thông lệ, có CP + lợi nhuận chung); HOẶC (b) Trị giá giao dịch xấp xỉ trị giá HQ của hàng giống hệt/tương tự của người không có QHĐB xuất khẩu sang VN trong cùng ngày hoặc trong 60 ngày trước/sau"}
+    ]},
+    {nhom:"PP2-3 – Hàng giống hệt & tương tự – Điều 8-9 (21VBHN)",icon:"copy",items:[
+      {k:"PP2: Hàng giống hệt (Điều 8)",v:"Áp dụng khi PP1 không xác định được. Hàng giống hệt: cùng đặc điểm vật lý, chất lượng, danh tiếng; do cùng hoặc khác nhà SX. Điều kiện: xuất khẩu sang VN trong cùng ngày hoặc trong 60 ngày trước/sau. Ưu tiên: cùng CĐ thương mại + số lượng; điều chỉnh nếu khác CĐ/SL"},
+      {k:"PP3: Hàng tương tự (Điều 9)",v:"Áp dụng khi PP1 và PP2 không xác định được. Hàng tương tự: thực hiện cùng chức năng, trao đổi thương mại được, có đặc điểm gần giống (không phải giống hệt). Cùng điều kiện 60 ngày và cùng CĐ thương mại. Nếu có nhiều trị giá → chọn trị giá THẤP NHẤT"},
+      {k:"Điều kiện lựa chọn hàng tương tự (Điều 9)",v:"Ưu tiên theo thứ tự: (1) Cùng CĐ TM + SL; (2) Cùng CĐ TM, khác SL → điều chỉnh theo SL; (3) Khác CĐ TM, cùng SL → điều chỉnh theo CĐ; (4) Khác cả CĐ TM và SL → điều chỉnh cả hai. Nếu không tìm được từ cùng nhà SX → tìm từ nhà SX khác. Không đủ TT trong TTHQ → không áp dụng PP2/3"}
+    ]},
+    {nhom:"PP4-6 – Khấu trừ, Tính toán & Suy luận – Điều 10-12 (21VBHN)",icon:"calculator",items:[
+      {k:"PP4: Trị giá khấu trừ (Điều 10)",v:"Căn cứ đơn giá bán lại tại VN cho người không QHĐB, sau đó khấu trừ: hoa hồng/lợi nhuận thông thường + phí vận tải/bảo hiểm nội địa + thuế XNK phải nộp. Đơn giá bán lại: trong 90 ngày kể từ NK (ưu tiên) hoặc trong 120 ngày (nếu không có trong 90 ngày, chọn giá bán nhiều nhất)"},
+      {k:"PP5: Trị giá tính toán (Điều 11)",v:"Tổng hợp từ sổ sách kế toán nhà SX: (a) Chi phí NVL + SX; (b) Chi phí chung + lợi nhuận thông thường của ngành hàng cùng phẩm cấp; (c) Phí vận tải + bảo hiểm đến CK nhập. Không được yêu cầu kiểm tra sổ kế toán người không cư trú tại VN, trừ khi được đồng ý"},
+      {k:"PP6: Suy luận (Điều 12)",v:"Vận dụng linh hoạt PP1→5 với nới lỏng điều kiện. Trị giá trong 90 ngày → 120 ngày với PP4. CẤM dùng: giá bán thị trường nội địa VN (hàng SX tại VN); giá bán thị trường nội địa nước XK; giá XK sang nước khác; chi phí SX (trừ PP5); giá tham chiếu Danh mục rủi ro; trị giá chưa có giao dịch mua bán; KHÔNG dùng trị giá cao hơn trong 2 trị giá thay thế"}
+    ]},
+    {nhom:"Điều chỉnh cộng vào trị giá giao dịch – Điều 13 (21VBHN)",icon:"plus-circle",items:[
+      {k:"3 điều kiện bắt buộc để điều chỉnh cộng",v:"Đồng thời phải: (1) Do NGƯỜI MUA thanh toán và chưa tính vào giá Invoice; (2) LIÊN QUAN đến hàng HK; (3) Có số liệu KHÁCH QUAN và ĐỊNH LƯỢNG ĐƯỢC theo chứng từ. Nếu thiếu bất kỳ điều kiện nào → không điều chỉnh được → không áp dụng PP1"},
+      {k:"6 khoản điều chỉnh cộng (Điều 13)",v:"(a) Hoa hồng bán hàng, phí môi giới; (b) Chi phí bao bì GẮN LIỀN với hàng (container/thùng tái sử dụng không tính); (c) Chi phí đóng gói (vật liệu + nhân công); (d) Khoản TRỢ GIÚP do người mua cung cấp miễn phí/giảm giá cho nhà SX (NVL, khuôn, thiết kế, công cụ...); (e) Phí bản quyền, phí giấy phép (Điều 14); (f) Khoản tiền người NK phải trả từ tiền thu được sau khi bán lại/định đoạt/sử dụng hàng NK"},
+      {k:"Khoản trợ giúp – phân loại (Điều 13 khoản 2d)",v:"4 loại: (d.1.1) NVL, bộ phận cấu thành; (d.1.2) NVL tiêu hao trong SX; (d.1.3) Công cụ, khuôn mẫu, dụng cụ; (d.1.4) Thiết kế, bản vẽ, sơ đồ. Cách xác định giá trị: mua ngoài → giá mua; tự SX → giá thành. Phải phân bổ trị giá TG cho toàn bộ hàng NK theo 5 phương pháp được lựa chọn"},
+      {k:"Phí bản quyền, phí giấy phép (Điều 14)",v:"Phải cộng vào trị giá HQ nếu: liên quan đến hàng NK; là điều kiện của việc mua bán hàng NK; do người mua thanh toán trực tiếp/gián tiếp cho người bán hoặc người thứ 3. KHÔNG cộng: phí BQ liên quan đến quyền tái SX tại VN; phí BQ phân phối tại VN sau NK"}
+    ]},
+    {nhom:"Trường hợp đặc biệt & Tờ khai trị giá – Điều 17-20 (21VBHN)",icon:"alert-circle",items:[
+      {k:"Chưa có giá chính thức (Điều 17 khoản 1)",v:"Khai giá TẠM TÍNH tại thời điểm đăng ký TK + thời điểm dự kiến có giá chính thức. Khi có giá chính thức: khai bổ sung trong 5 ngày làm việc + nộp thuế chênh lệch (nếu có). Điều kiện giá chính thức vượt 90 ngày: phải nộp kèm HĐ + Invoice chứng minh thỏa thuận. Không khai bổ sung → HQ ấn định thuế + xử phạt"},
+      {k:"Hàng đã sử dụng tại VN thay đổi mục đích (Điều 17 khoản 2)",v:"Ô tô, mô tô: trị giá = % trị giá khai báo lúc NK. Tỷ lệ: ≤6th→90%; 6th-1năm→80%; 1-2năm→70%; 2-3năm→60%; 3-5năm→50%; 5-7năm→40%; 7-9năm→30%; 9-10năm→15%; >10năm→0%. Hàng khác: tiêu hủy→trị giá khai báo; bán→giá thực tế bán"},
+      {k:"Hàng thuê/mượn, sửa chữa (Điều 17)",v:"Hàng THUÊ: trị giá = tiền thuê (giá thuê phải trả). Hàng MƯỢN: trị giá = toàn bộ CP người mượn phải trả để đưa hàng đến CK nhập. Hàng ĐI SỬA CHỮA ở nước ngoài rồi NK về: trị giá = chi phí thực trả để sửa chữa (không tính trị giá ban đầu của hàng)"},
+      {k:"Đối tượng khai tờ khai trị giá (Điều 18-19)",v:"Hàng NK phải khai TK trị giá HQ NGOẠI TRỪ: hàng không vì mục đích thương mại; hàng nhập khẩu thuộc loại không phải nộp thuế NK; hàng của DNƯT được miễn khai theo quy định. Mẫu HQ/2015-TG1: khai theo PP1 (trị giá giao dịch). Mẫu HQ/2015-TG2: khai theo PP2→6"},
+      {k:"Nguyên tắc khai TK trị giá (Điều 20)",v:"Khai chi tiết từng mặt hàng tương ứng trên TK HQ. Tờ khai trị giá là BỘ PHẬN KHÔNG TÁCH RỜI của TK hàng NK, nộp kèm theo khi làm thủ tục. Mỗi dòng hàng trên TK NK tương ứng một mặt hàng trên TK trị giá"}
+    ]}
+  ],
+  ghi_chu:"Hợp nhất TT 39/2015 + TT 60/2019. Cần đọc thêm NĐ 167/2025 cho trị giá hàng xuất khẩu.",mau:"secondary",thu_tu:4,lien_ket:["TT38","46VBHN"]},
+  {id:"ND69",ky_hieu:"NĐ 69/2018/NĐ-CP",ten:"Quy định chi tiết Luật Quản lý ngoại thương",co_quan:"Chính phủ",hieu_luc:"15/05/2018",loai:"Nghị định",cap:"Nghị định",nhom:["hang_hoa","tat_ca"],tinh_huong:["hang_hoa_cam","khai_bao","phap_ly"],dieu_tiet:["Phụ lục I: Danh mục hàng CẤM nhập khẩu","Phương tiện tay lái phải bị cấm","Hàng tiêu dùng đã qua sử dụng bị cấm","Hàng NK theo điều kiện / giấy phép","Thủ tục xin giấy phép NK tự động / không tự động"],chi_tiet:[
+    {nhom:"DANH MỤC HÀNG CẤM XUẤT KHẨU – Phụ lục I (NĐ69)",icon:"upload",items:[
+      {k:"1. Vũ khí, đạn dược, vật liệu nổ",v:"Vũ khí, đạn dược, vật liệu nổ (trừ vật liệu nổ công nghiệp), trang thiết bị kỹ thuật quân sự → Bộ Quốc phòng"},
+      {k:"2. Sản phẩm mật mã",v:"Sản phẩm mật mã sử dụng để bảo vệ thông tin bí mật Nhà nước → Bộ Quốc phòng"},
+      {k:"3. Di vật, cổ vật, sản phẩm văn hóa",v:"Di vật, cổ vật, bảo vật quốc gia theo pháp luật di sản văn hóa; sản phẩm văn hóa thuộc diện cấm/đình chỉ phổ biến, lưu hành → Bộ Văn hóa, TT&DL"},
+      {k:"4. Xuất bản phẩm, tem bưu chính",v:"Xuất bản phẩm cấm phổ biến và lưu hành tại VN; tem bưu chính thuộc diện cấm kinh doanh, trao đổi, trưng bày → Bộ TTTT & Bộ VHTTDL"},
+      {k:"5. Gỗ tự nhiên",v:"Gỗ tròn, gỗ xẻ các loại từ gỗ rừng tự nhiên trong nước → Bộ NN&PTNT"},
+      {k:"6. Mẫu vật động thực vật hoang dã",v:"Mẫu vật động vật, thực vật hoang dã nguy cấp Phụ lục I CITES có nguồn gốc tự nhiên; mẫu vật thực vật rừng, động vật rừng nguy cấp nhóm IA, IB → Bộ NN&PTNT"},
+      {k:"7. Hóa chất Bảng 1 CWC",v:"Hóa chất Bảng 1 theo Công ước cấm vũ khí hóa học (CWC) và Phụ lục NĐ 38/2014/NĐ-CP → Bộ Công Thương"}
+    ]},
+    {nhom:"DANH MỤC HÀNG CẤM NHẬP KHẨU – Phụ lục I (NĐ69)",icon:"download",items:[
+      {k:"1. Vũ khí, đạn dược, vật liệu nổ",v:"Vũ khí, đạn dược, vật liệu nổ (trừ vật liệu nổ công nghiệp), trang thiết bị kỹ thuật quân sự → Bộ Quốc phòng"},
+      {k:"2. Pháo, đèn trời, thiết bị gây nhiễu",v:"Pháo các loại (trừ pháo hiệu an toàn hàng hải), đèn trời, thiết bị gây nhiễu máy đo tốc độ phương tiện giao thông → Bộ Công an"},
+      {k:"3. Hóa chất Bảng 1 CWC & tiền chất",v:"Hóa chất Bảng 1 theo CWC; tiền chất thuốc nổ thuộc Nhóm 1 (NĐ 38/2014) → Bộ Công Thương"},
+      {k:"4. Hàng tiêu dùng & TTYT đã qua sử dụng",v:"Hàng dệt may, giày dép, quần áo; hàng điện tử; hàng điện lạnh; hàng điện gia dụng; thiết bị y tế; phương tiện đã qua sử dụng → BTC/BCT/BGTVT"},
+      {k:"5. Sản phẩm văn hóa cấm",v:"Sản phẩm văn hóa cấm phổ biến, lưu hành hoặc đã bị đình chỉ, thu hồi, tiêu hủy tại VN → Bộ VHTTDL"},
+      {k:"6. Sản phẩm CNTT đã qua sử dụng",v:"Hàng hóa là sản phẩm công nghệ thông tin đã qua sử dụng → Bộ Thông tin và Truyền thông"},
+      {k:"7. Xuất bản phẩm, tem bưu chính",v:"Xuất bản phẩm cấm phổ biến và lưu hành tại VN; tem bưu chính thuộc diện cấm kinh doanh, trao đổi, trưng bày → Bộ TTTT & Bộ VHTTDL"},
+      {k:"8. Phương tiện tay lái phải",v:"Phương tiện vận tải tay lái bên phải (kể cả dạng tháo rời và dạng đã chuyển đổi tay lái trước khi NK vào VN), trừ phương tiện chuyên dùng hoạt động trong phạm vi hẹp → Bộ GTVT"},
+      {k:"9. Vật tư, phương tiện đã qua sử dụng",v:"Máy, khung, săm lốp, phụ tùng, động cơ ô tô/rơ moóc/xe kéo; khung gầm ô tô/máy kéo có gắn động cơ (kể cả đã tháo rời); ô tô chở người trên 16 chỗ đã qua sử dụng → Bộ GTVT"},
+      {k:"10. Hóa chất Phụ lục III Công ước Rotterdam",v:"Hóa chất trong Phụ lục III Công ước Rotterdam về thủ tục thỏa thuận thông báo trước (PIC) → Bộ NN&PTNT"},
+      {k:"11. Thuốc BVTV cấm sử dụng",v:"Thuốc bảo vệ thực vật cấm sử dụng tại Việt Nam → Bộ NN&PTNT"},
+      {k:"12. Mẫu vật động thực vật hoang dã",v:"Mẫu vật ĐVTV Phụ lục I CITES nhập vì mục đích thương mại; mẫu vật và sản phẩm chế tác của: tê giác trắng, tê giác đen, hổ, gấu, voi, đồi mồi, tê tê → Bộ NN&PTNT"},
+      {k:"13. Phế liệu, phế thải, thiết bị lạnh CFC",v:"Phế liệu, phế thải, thiết bị làm lạnh sử dụng CFC (chất làm suy giảm tầng ô-zôn) → Bộ TN&MT"},
+      {k:"14. Vật liệu chứa amiăng nhóm amfibole",v:"Sản phẩm, vật liệu có chứa amiăng thuộc nhóm amfibole (chrysotile được phép theo quy định riêng) → Bộ Xây dựng"}
+    ]},
+        {nhom:"Phân loại hàng theo chế độ quản lý – Điều 4-7",icon:"layers",items:[
+      {k:"4 chế độ quản lý hàng XNK (Điều 4-7)",v:"(1) HÀNG CẤM XK/NK: theo Phụ lục I NĐ69 + các VB pháp luật chuyên ngành; (2) HÀNG THEO CHỈ ĐỊNH THƯƠNG NHÂN: Phụ lục II NĐ69; (3) HÀNG THEO GIẤY PHÉP/ĐIỀU KIỆN: Phụ lục III NĐ69 – phải có GP hoặc đáp ứng điều kiện trước khi XNK; (4) HÀNG TỰ DO: chỉ làm thủ tục hải quan"},
+      {k:"Hàng cấm NK – một số loại tiêu biểu (Điều 5)",v:"Vũ khí, đạn dược, vật liệu nổ; ma túy; hóa chất độc bảng 1 CWC; chất thải nguy hại; hàng tiêu dùng đã qua sử dụng (quần áo, điện tử, điện lạnh...); phương tiện tay lái phải đã qua sử dụng; hàng vi phạm quyền SHTT; thuốc lá điếu sản xuất ở nước ngoài. Chi tiết theo Phụ lục I"},
+      {k:"Giấy phép XK/NK – thủ tục (Điều 9)",v:"Hồ sơ: Văn bản đề nghị (01 bản chính) + ĐKKD/ĐKDN (01 bản sao có dấu) + chứng từ theo quy định. Thời hạn: 10 ngày làm việc từ ngày nhận đủ hồ sơ. Chưa đủ hồ sơ → thông báo trong 3 ngày để bổ sung. Sửa đổi/cấp lại: không dài hơn thời gian cấp mới"},
+      {k:"Giấy phép NK tự động (Điều 7 khoản 4)",v:"Bộ trưởng BCT quy định áp dụng Giấy phép NK tự động đối với một số mặt hàng tùy theo mục tiêu điều hành từng thời kỳ. Khác với GP thông thường: thủ tục đơn giản hơn nhưng vẫn phải có trước khi NK"}
+    ]},
+    {nhom:"CFS – Giấy chứng nhận lưu hành tự do hàng NK – Điều 10",icon:"award",items:[
+      {k:"CFS là gì và khi nào cần (Điều 10)",v:"CFS (Certificate of Free Sale): chứng nhận SP được sản xuất và phép bán tự do tại thị trường nước SX/nước cấp. Phụ lục V NĐ69 quy định Danh mục HH NK phải nộp CFS; từng Bộ công bố chi tiết danh mục kèm mã HS"},
+      {k:"Nội dung tối thiểu trên CFS (Điều 10 khoản 3)",v:"(a) Tên cơ quan cấp; (b) Số và ngày cấp; (c) Tên sản phẩm; (d) Loại/nhóm sản phẩm; (e) Tên và địa chỉ nhà SX; (f) Ghi rõ được SX và phép bán tự do tại thị trường nước SX/cấp; (g) Họ tên, chữ ký, dấu người ký"},
+      {k:"Xác minh CFS nghi vấn (Điều 10 khoản 6)",v:"Khi nghi ngờ tính xác thực hoặc HH không phù hợp với nội dung CFS → cơ quan có thẩm quyền gửi yêu cầu kiểm tra/xác minh tới cơ quan cấp CFS tại nước ngoài"}
+    ]},
+    {nhom:"Kinh doanh tạm nhập tái xuất (TNTX) – Điều 12-16",icon:"refresh-cw",items:[
+      {k:"Hàng CẤM kinh doanh TNTX (Điều 12)",v:"Theo Phụ lục VI NĐ69. Lưu ý: hàng CẤM kinh doanh TNTX vẫn có thể được chuyển khẩu thẳng (không qua kho bãi/lãnh thổ VN). Bộ trưởng BCT được tạm ngừng TNTX khi có nguy cơ ô nhiễm môi trường, dịch bệnh, gian lận thương mại"},
+      {k:"Hàng TNTX cần giấy phép BCT (Điều 13 điểm b)",v:"Hàng cấm XK/NK; hàng tạm ngừng XK/NK; hàng chưa được phép lưu hành tại VN; hàng quản lý bằng biện pháp hạn ngạch/GP/điều kiện → phải có GP kinh doanh TNTX của BCT. Hồ sơ gồm: văn bản đề nghị + ĐKDN + hợp đồng NK và XK + báo cáo tình hình thực hiện GP cũ"},
+      {k:"Hàng TNTX KHÔNG cần giấy phép (Điều 13 điểm c)",v:"Hàng hóa thông thường không thuộc diện cấm/hạn chế → chỉ làm thủ tục hải quan, không cần GP BCT"},
+      {k:"Thời hạn lưu hàng TNTX tại VN (Điều 13 khoản 4)",v:"Tối đa 60 NGÀY kể từ ngày hoàn thành TTHQ tạm nhập. Cần kéo dài: văn bản đề nghị và được BCT chấp thuận. Hết hạn: phải TXT ra khỏi VN HOẶC tiêu hủy HOẶC làm thủ tục NK chính thức (chịu đủ thuế và điều kiện quản lý)"},
+      {k:"Cửa khẩu TNTX (Điều 16)",v:"TN và TX qua cửa khẩu quốc tế hoặc cửa khẩu chính. TX qua cửa khẩu phụ/lối mở biên giới: thực hiện theo quy định riêng của BCT. Hàng TNTX chịu GS HQ từ khi TN đến khi thực TX ra khỏi VN; không được chia nhỏ container trong quá trình vận chuyển"}
+    ]},
+    {nhom:"Tạm xuất tái nhập (TXTN) & Chuyển khẩu – Điều 17-18",icon:"arrow-right-left",items:[
+      {k:"Tạm xuất tái nhập (Điều 17)",v:"Được TXTN để: SX, thi công, cho thuê/mượn, sử dụng mục đích khác; bảo hành theo HĐ NK; bảo hành/sửa chữa ngoài thời hạn bảo hành HĐ NK (nếu không phải hàng cấm NK); dự hội chợ/triển lãm. Hàng tiêu dùng đã qua sử dụng và linh kiện đã qua sử dụng trong DM cấm NK → KHÔNG được TXTN để bảo hành/sửa chữa"},
+      {k:"Chuyển khẩu (Điều 18)",v:"Hàng không thuộc diện cấm/hạn ngạch → chỉ làm TTHQ, không cần GP BCT. Hàng cấm/hạn ngạch/chưa phép lưu hành → phải có GP kinh doanh chuyển khẩu của BCT. Phải đưa vào và ra khỏi VN tại CÙNG KHU VỰC CỬA KHẨU và chịu GS HQ. DN FDI KHÔNG được kinh doanh chuyển khẩu. Thanh toán theo quy định quản lý ngoại hối"}
+    ]},
+    {nhom:"Danh mục hàng CẤM XUẤT KHẨU – Phụ lục I NĐ69",icon:"arrow-up-circle",items:[
+      {k:"1. Vũ khí, đạn dược, vật liệu nổ (trừ CN), TTKT quân sự",v:"Bộ Quốc phòng quản lý. Áp dụng cho mọi hình thức XK kể cả phi mậu dịch, viện trợ, biên giới"},
+      {k:"2. Sản phẩm mật mã bảo vệ thông tin bí mật Nhà nước",v:"Bộ Quốc phòng quản lý"},
+      {k:"3. Di vật, cổ vật, bảo vật quốc gia; sản phẩm văn hóa cấm phổ biến",v:"Bộ VHTTDL quản lý. Bao gồm: di sản văn hóa vật thể; SP văn hóa đã bị đình chỉ phổ biến, lưu hành, thu hồi hoặc tịch thu tại VN"},
+      {k:"4. Xuất bản phẩm cấm phổ biến; tem bưu chính cấm kinh doanh",v:"Bộ TTTT quản lý"},
+      {k:"5. Gỗ tròn, gỗ xẻ từ rừng tự nhiên trong nước",v:"Bộ NN&PTNT quản lý. Lưu ý: gỗ rừng trồng và gỗ NK không thuộc diện cấm"},
+      {k:"6. Mẫu vật ĐV, TV hoang dã nguy cấp Phụ lục I CITES từ tự nhiên; ĐV rừng nguy cấp nhóm IA/IB",v:"Bộ NN&PTNT quản lý. Bao gồm cả san hô, rùa biển. Mẫu vật nuôi sinh sản hợp pháp được XK có điều kiện"},
+      {k:"7. Hóa chất Bảng 1 CWC; vũ khí hóa học",v:"Bộ Công Thương quản lý. Hóa chất Bảng 1 trong Công ước CWC cấm tuyệt đối. Trường hợp đặc biệt phục vụ mục đích đặc dụng: xin phép Thủ tướng Chính phủ"}
+    ]},
+    {nhom:"Danh mục hàng CẤM NHẬP KHẨU – Phụ lục I NĐ69",icon:"arrow-down-circle",items:[
+      {k:"1. Vũ khí, đạn dược, vật liệu nổ (trừ CN), TTKT quân sự",v:"Bộ Quốc phòng quản lý"},
+      {k:"2. Pháo các loại; đèn trời; thiết bị gây nhiễu máy đo tốc độ",v:"Bộ Công an quản lý. Trừ pháo hiệu an toàn hàng hải theo hướng dẫn Bộ GTVT"},
+      {k:"3. Hóa chất Bảng 1 CWC; tiền chất ma túy; hóa chất cấm SX vũ khí HH",v:"Bộ Công Thương quản lý. Trường hợp đặc biệt: xin phép Thủ tướng"},
+      {k:"4. Hàng tiêu dùng, thiết bị y tế, phương tiện ĐÃ QUA SỬ DỤNG",v:"Bộ Công Thương quản lý. Cụ thể cấm: (a) Dệt may, giày dép, quần áo; (b) Hàng điện tử; (c) Hàng điện lạnh; (d) Hàng điện gia dụng; (đ) Thiết bị y tế. Đây là nhóm hay gặp nhất trong XNK"},
+      {k:"5. Sản phẩm văn hóa cấm phổ biến/lưu hành tại VN",v:"Bộ VHTTDL quản lý"},
+      {k:"6. Hàng công nghệ thông tin ĐÃ QUA SỬ DỤNG",v:"Bộ TTTT quản lý. Bao gồm máy tính, thiết bị mạng, điện thoại, phụ kiện CNTT đã qua sử dụng"},
+      {k:"7. Xuất bản phẩm cấm; tem bưu chính cấm kinh doanh",v:"Bộ TTTT quản lý"},
+      {k:"8. Phương tiện TAY LÁI BÊN PHẢI",v:"Bộ GTVT quản lý. Cấm cả dạng tháo rời VÀ dạng đã chuyển đổi tay lái trước khi NK vào VN. Trừ: xe chuyên dụng có tay lái phải hoạt động trong phạm vi hẹp (xe nâng, xe thi công...)"},
+      {k:"9. Vật tư, phương tiện ô tô đã qua sử dụng",v:"Bộ GTVT quản lý. Cụ thể: máy/khung/săm/lốp/phụ tùng/động cơ ô tô, rơ moóc, xe 4 bánh có gắn động cơ; khung gầm ô tô/máy kéo có gắn động cơ"},
+      {k:"10. Hóa chất Phụ lục III Công ước Rotterdam",v:"Bộ NN&PTNT quản lý. Đây là các hóa chất nguy hiểm đã bị cấm/hạn chế nghiêm ngặt tại nhiều quốc gia"},
+      {k:"11. Thuốc bảo vệ thực vật cấm sử dụng tại VN",v:"Bộ NN&PTNT quản lý. Danh mục cụ thể do Bộ NN&PTNT công bố và cập nhật định kỳ"},
+      {k:"12. Mẫu vật ĐV, TV hoang dã Phụ lục I CITES vì mục đích thương mại; SP tê giác/voi/hổ",v:"Bộ NN&PTNT quản lý. Cấm tuyệt đối: sừng tê giác, ngà voi, hổ và sản phẩm chế tác. Mẫu vật nhập để nghiên cứu khoa học được phép có điều kiện"},
+      {k:"13. Phế liệu, phế thải; thiết bị làm lạnh dùng CFC",v:"Bộ TNMT quản lý. Cấm NK phế liệu/phế thải dưới mọi hình thức (trừ phế liệu được phép NK làm NVL SX theo quy định Luật BVMT)"},
+      {k:"14. Sản phẩm, vật liệu có chứa amiăng nhóm amfibole",v:"Bộ Xây dựng quản lý. Amfibole là loại amiăng nguy hiểm gây ung thư. Amiăng chrysotile (trắng) NK có điều kiện theo quy định riêng"}
+    ]}
+  ],
+  ghi_chu:"Tra cứu NGAY sau khi có mã HS để xác định hàng có bị cấm/hạn chế.",mau:"warning",thu_tu:5,lien_ket:["54VBHN","ND128_102"]},
+  {id:"TT33",ky_hieu:"TT 33/2023/TT-BTC",ten:"Xác định xuất xứ hàng hóa xuất khẩu, nhập khẩu",co_quan:"Bộ Tài chính",hieu_luc:"17/07/2023",loai:"Thông tư",cap:"Thông tư",nhom:["xuat_xu","co","tat_ca"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Quy trình kiểm tra C/O tại cửa khẩu","Tiêu chí xác minh tính hợp lệ C/O","Xử lý C/O có nghi vấn / yêu cầu xác minh","Hồ sơ kèm khi nộp C/O cho hải quan","Trừ lùi C/O nhiều lô – nhiều chuyến"],chi_tiet:[
+    {nhom:"Danh mục hàng NK PHẢI nộp C/O cho Hải quan (Phụ lục TT33)",icon:"list",items:[
+      {k:"I. Thịt & sản phẩm thịt gia súc, gia cầm",v:"Chương 2: Thịt và phụ phẩm dạng thịt ăn được sau giết mổ. Các nhóm HS: 15.01 (mỡ lợn/gia cầm) · 15.02 (mỡ trâu bò, cừu, dê) · 15.03 (stearin/oleostearin) · 15.04 (mỡ/dầu cá, ĐV biển) · 15.05 (mỡ lông/lanolin) · 1506 (mỡ dầu ĐV khác) · 1516.10 (mỡ dầu ĐV đã biến đổi) · 1517 (margarin, chế phẩm giả ghee/mỡ lợn, shortening) · 1518 (mỡ dầu ĐV không ăn được) · 16.01 (xúc xích và sản phẩm tương tự) · 16.02 (thịt/phụ phẩm đã chế biến/bảo quản) · 16.03 (chiết xuất, nước ép từ thịt/cá)"},
+      {k:"II. Than",v:"27.01: Than đá, than bánh, nhiên liệu rắn từ than đá · 27.02: Than non (đã hoặc chưa đóng bánh, trừ than huyền) · 27.03: Than bùn (đã hoặc chưa đóng bánh) · 27.04: Than cốc và than nửa cốc; muội bình chưng than đá"},
+      {k:"III. Ô tô (Chương 87)",v:"Tất cả mặt hàng ô tô có mã HS thuộc Chương 87. ĐƯỢC MIỄN nộp C/O trong các trường hợp: xe ô tô chuyên dùng; xe ô tô đầu kéo container; xe ô tô tạm nhập của đối tượng được hưởng quyền ưu đãi miễn trừ; xe ô tô NK theo diện khác theo quy định"}
+    ]},
+    {nhom:"Quy trình kiểm tra C/O tại cửa khẩu",icon:"search",items:[
+      {k:"Kiểm tra tính hợp lệ C/O",v:"Kiểm tra: (1) Mẫu C/O đúng loại theo FTA tương ứng; (2) Thông tin trên C/O khớp với hồ sơ hải quan (tên hàng, số lượng, trọng lượng, trị giá, nhà XK/NK, cảng đi/đến); (3) Chữ ký và con dấu cơ quan cấp còn hiệu lực; (4) C/O trong thời hạn hiệu lực (thường 12 tháng)"},
+      {k:"C/O có nghi vấn – xử lý (TT33)",v:"Khi HQ nghi ngờ tính xác thực: (1) Cho hàng TQ nhưng KHÔNG cho hưởng thuế suất ưu đãi; (2) Gửi yêu cầu xác minh đến cơ quan cấp C/O nước XK; (3) Chờ kết quả xác minh trong thời hạn quy định theo từng FTA; (4) Nếu xác nhận hợp lệ → hoàn trả thuế chênh lệch. Nếu C/O không hợp lệ → truy thu thuế + xử lý vi phạm"},
+      {k:"Hồ sơ nộp C/O cho HQ",v:"Nộp cùng hồ sơ HQ NK: (1) Bản chính C/O (Original); (2) Tờ khai HQ; (3) Hóa đơn thương mại; (4) Vận đơn. Riêng C/O điện tử (ASEAN, EVFTA...): tra cứu trực tiếp trên Cổng 1 cửa ASEAN hoặc hệ thống liên kết, không cần bản giấy"},
+      {k:"Trừ lùi C/O nhiều lô – nhiều chuyến",v:"Áp dụng khi 1 C/O dùng cho nhiều lô hàng/nhiều chuyến (C/O tờ khai một lần). HQ nơi đăng ký TK lần đầu lưu C/O bản chính và theo dõi trừ lùi số lượng. Các lần NK tiếp theo nộp bản sao C/O có xác nhận của HQ đã kiểm tra lần đầu"}
+    ]},
+    {nhom:"Xác minh C/O & từ chối ưu đãi",icon:"shield-check",items:[
+      {k:"Căn cứ từ chối cho hưởng ưu đãi",v:"C/O bị từ chối khi: không đúng mẫu quy định; hết hiệu lực; thông tin không khớp hồ sơ HQ; cơ quan cấp không có thẩm quyền; hàng hóa thực tế không đáp ứng quy tắc xuất xứ; có dấu hiệu giả mạo. HQ thông báo lý do từ chối bằng văn bản"},
+      {k:"Xác minh C/O với nước XK",v:"HQ VN gửi yêu cầu xác minh đến cơ quan cấp C/O/cơ quan có thẩm quyền nước XK. Thời hạn trả lời theo từng FTA (thường 3-6 tháng). Trong thời gian xác minh: hàng được TQ nhưng không hưởng ưu đãi hoặc phải ký quỹ. HQ có thể xác minh trực tiếp tại nước XK theo thỏa thuận song phương"},
+      {k:"Kiểm tra xuất xứ sau TQ (KSTQ)",v:"HQ có quyền kiểm tra xuất xứ hàng đã TQ trong thời hạn 5 năm. Yêu cầu DN cung cấp: hồ sơ GC/SX chứng minh xuất xứ, hóa đơn mua NVL, báo cáo quyết toán NVL/SP. Kết quả KSTQ xác định không đủ ĐK XK → thu hồi ưu đãi thuế đã được hưởng + truy thu + xử lý vi phạm"}
+    ]}
+  ],
+  ghi_chu:"⚡ Thay thế HOÀN TOÀN TT 38/2018 (đã hết hiệu lực từ 17/7/2023).",mau:"secondary",thu_tu:6,lien_ket:["QD467","TT492025","TT142026"]},
+  {id:"QD467",ky_hieu:"QĐ 467/QĐ-CHQ (29/4/2025)",ten:"Quy trình kiểm tra, xác định xuất xứ hàng hóa XNK",co_quan:"Cục Hải quan",hieu_luc:"29/04/2025",loai:"Quyết định",cap:"Quyết định",nhom:["xuat_xu","co"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Quy trình tác nghiệp kiểm tra C/O tại Chi cục HQ","Kiểm tra C/O giấy: đối chiếu scan chữ ký số","Kiểm tra C/O điện tử: tra cứu Cổng 1 cửa ASEAN","Xác minh C/O qua cơ quan cấp nước xuất khẩu"],ghi_chu:"Quy trình mới nhất 2025. Áp dụng song song với TT 33/2023.",mau:"secondary",thu_tu:7,lien_ket:["TT33"]},
+  {id:"ND15",ky_hieu:"NĐ 15/2018/NĐ-CP",ten:"Kiểm tra chuyên ngành an toàn thực phẩm",co_quan:"Chính phủ",hieu_luc:"02/02/2018",loai:"Nghị định",cap:"Nghị định",nhom:["chuyen_nganh","thuc_pham"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Phương thức Kiểm tra giảm: tối đa 5% số lô/năm","Phương thức Kiểm tra thông thường: chỉ kiểm hồ sơ","Phương thức Kiểm tra chặt: kiểm hồ sơ + lấy mẫu","Hồ sơ đăng ký kiểm tra ATTP nhập khẩu","Cơ quan được chỉ định kiểm tra ATTP"],ghi_chu:"Áp dụng thực phẩm, TPCN, đồ uống, nguyên liệu thực phẩm nhập khẩu.",mau:"success",thu_tu:8,lien_ket:["ND69","TT38"]},
+  {id:"ND37_2026",ky_hieu:"NĐ 37/2026/NĐ-CP",ten:"Nhãn hàng hóa – Quy định chi tiết thi hành Luật Chất lượng sản phẩm, hàng hóa",co_quan:"Chính phủ",hieu_luc:"23/01/2026",loai:"Nghị định",cap:"Nghị định",nhom:["nhan_mac","tat_ca"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Nhãn gốc khi thông quan: bắt buộc có xuất xứ + tên/địa chỉ nhà SX (tiếng nước ngoài hoặc tiếng Việt) – Điều 42","Nhãn phụ tiếng Việt đầy đủ trước khi lưu thông nội địa (tên hàng, tổ chức chịu TN, xuất xứ + Phụ lục I theo ngành)","Lần đầu hợp pháp hóa nhãn điện tử: QR code, NFC, Datamatrix, RFID thay thế một phần hoặc toàn bộ nhãn vật lý","Bán hàng online (Shopee, Lazada, TikTok Shop…) phải hiển thị 100% nội dung nhãn trên trang mô tả sản phẩm","Vị trí nhãn: phải dễ quan sát, đầy đủ, không cần tháo rời chi tiết hàng hóa","Nội dung nhãn riêng theo ngành quy định tại Phụ lục I ban hành kèm Nghị định"],chi_tiet:[
+    {nhom:"Hàng NK khi thông quan – nhãn gốc bắt buộc – Điều 42 khoản 2",icon:"shield-check",items:[
+      {k:"Nhãn gốc hàng NK khi làm thủ tục TQ (Điều 42.2)",v:"Bắt buộc có nhãn VẬT LÝ thể hiện bằng tiếng nước ngoài HOẶC tiếng Việt: (a) Tên hàng hóa; (b) Xuất xứ hàng hóa (nếu không xác định được thì ghi nơi thực hiện công đoạn cuối cùng hoàn thiện HH); (c) Tên đầy đủ hoặc tên viết tắt + địa chỉ tổ chức/cá nhân SX hoặc chịu trách nhiệm về HH ở nước ngoài"},
+      {k:"Nhãn phụ bắt buộc trước khi lưu thông (Điều 40)",v:"Hàng NK chưa thể hiện đủ nội dung bắt buộc bằng tiếng Việt trên nhãn gốc → PHẢI có nhãn phụ tiếng Việt. Nhãn phụ không được che khuất nội dung bắt buộc của nhãn gốc. Nhãn phụ có thể thể hiện bằng nhãn điện tử (nhưng phải giữ nguyên nhãn gốc)"},
+      {k:"Hàng NK KHÔNG cần nhãn phụ (Điều 40 khoản 4)",v:"(a) Linh kiện NK để thay thế trong bảo hành; (b) Nguyên liệu, phụ gia, linh kiện NK để SX, không bán ra thị trường; (c) Hàng mẫu thử nghiệm/chứng nhận/giám định/quảng cáo/triển lãm không tiêu thụ; (d) Thiết bị hỗ trợ máy móc SX, không đưa ra thị trường"}
+    ]},
+    {nhom:"Phạm vi & hàng được miễn ghi nhãn – Điều 35",icon:"info",items:[
+      {k:"Hàng KHÔNG phải ghi nhãn theo NĐ37 (Điều 35)",v:"Bất động sản; hàng TNTX, quá cảnh, chuyển khẩu, trung chuyển, gửi kho ngoại quan để XK sang nước thứ ba; hành lý xuất/nhập cảnh; hàng mang theo cá nhân trong định mức miễn thuế; hàng tịch thu bán đấu giá; thực phẩm tươi sống/chế biến không bao bì bán trực tiếp; NVL/nhiên liệu/phế liệu không bao bì bán trực tiếp; hàng đã qua sử dụng"},
+      {k:"Hàng dạng rời/chất lỏng/khí trong thùng/téc (Điều 35)",v:"Không cần nhãn trên bao bì nhưng PHẢI có hồ sơ/tài liệu kèm theo thể hiện tên hàng, xuất xứ, thành phần. Nếu hồ sơ bằng tiếng nước ngoài → phải có bản dịch tiếng Việt"}
+    ]},
+    {nhom:"Vị trí, kích thước & ngôn ngữ nhãn – Điều 36-39",icon:"layout",items:[
+      {k:"Vị trí nhãn (Điều 36)",v:"Dễ quan sát, nhận biết đầy đủ nội dung, không cần tháo rời chi tiết HH. Nội dung bắt buộc KHÔNG cần tập trung tại một vị trí, có thể ghi rải trên nhiều vị trí. Bao bì ngoài trong suốt nhìn thấy nhãn bên trong → không bắt buộc ghi nhãn bao bì ngoài"},
+      {k:"Kích thước nhãn (Điều 37)",v:"Tự xác định kích thước nhưng phải: ghi đủ nội dung bắt buộc; chữ số đọc được bằng mắt thường. HH NK cỡ nhỏ không ghi đủ theo cỡ chữ tối thiểu 0.9mm → phải ghi tối thiểu: tên HH, xuất xứ, tên/địa chỉ tổ chức chịu TN"},
+      {k:"Ngôn ngữ nhãn (Điều 39)",v:"Nội dung bắt buộc phải bằng TIẾNG VIỆT. Được phép ghi thêm ngôn ngữ khác nhưng nội dung ngôn ngữ khác không được lớn hơn nội dung tiếng Việt. Được phép ghi bằng chữ La tinh: tên quốc tế/khoa học; công thức hóa học; tên/địa chỉ DN nước ngoài; tên tác phẩm nghệ thuật"}
+    ]},
+    {nhom:"Nội dung bắt buộc trên nhãn lưu thông – Điều 42-47",icon:"file-text",items:[
+      {k:"4 nội dung bắt buộc (Điều 42 khoản 1)",v:"(a) Tên hàng hóa; (b) Tên và địa chỉ tổ chức/cá nhân chịu trách nhiệm; (c) Xuất xứ hàng hóa; (d) Các nội dung theo tính chất từng loại HH quy định tại Phụ lục I (định lượng, NSX/HSD, thành phần, thông số kỹ thuật, cảnh báo...)"},
+      {k:"Tên hàng hóa (Điều 43)",v:"Vị trí dễ thấy, cỡ chữ LỚN NHẤT trên nhãn. Tự đặt tên nhưng không làm hiểu sai bản chất/công dụng/thành phần. Nếu dùng tên thành phần làm tên HH → phải ghi định lượng thành phần đó"},
+      {k:"Tên & địa chỉ tổ chức chịu TN (Điều 44)",v:"HH NK: ghi tên/địa chỉ nhà SX nước ngoài + tên/địa chỉ tổ chức NK tại VN. HH đặt gia công: ghi tên/địa chỉ bên đặt GC. HH nhượng quyền: ghi thêm tên/địa chỉ bên nhượng quyền. Tên nước/vùng lãnh thổ không được viết tắt"},
+      {k:"Ngày SX & hạn sử dụng (Điều 46)",v:"Ghi theo thứ tự ngày-tháng-năm dương lịch. Mỗi số = 2 chữ số (năm có thể 4 chữ số). Được ghi tắt: NSX, HSD/HD. Hàng san chia/sang chiết: phải ghi NSX gốc + ngày san chiết + HSD gốc + HSD mới (nếu thay đổi)"},
+      {k:"Xuất xứ hàng hóa (Điều 47)",v:"Ghi: 'sản xuất tại', 'Made in', 'Origin', 'Xuất xứ'... Nếu không xác định được XK → ghi nơi thực hiện công đoạn cuối cùng hoàn thiện HH. Tên nước/vùng lãnh thổ không được viết tắt (trừ viết tắt theo TCVN 7217-1 trên nhãn gốc hàng NK)"}
+    ]},
+    {nhom:"Nhãn điện tử (eLabel) – Điều 52-55",icon:"qr-code",items:[
+      {k:"Nguyên tắc (Điều 52)",v:"Được dùng nhãn điện tử thể hiện MỘT PHẦN hoặc TOÀN BỘ nội dung bắt buộc. Hàng rủi ro THẤP: có thể dùng nhãn điện tử thay toàn bộ nhãn vật lý. Hàng rủi ro TRUNG BÌNH/CAO: nhãn vật lý BẮT BUỘC phải có: tên HH + tên/địa chỉ tổ chức chịu TN + xuất xứ + cảnh báo"},
+      {k:"Kê khai nhãn điện tử (Điều 54)",v:"Đăng ký tại https://elabel.gov.vn. Sau khi kê khai hệ thống khởi tạo vật mang dữ liệu (QR/NFC...) để gắn lên HH. Nhãn điện tử có giá trị suốt vòng đời sản phẩm. Lưu trữ nội dung tối thiểu 12 tháng sau khi HH hết HSD"},
+      {k:"Kỹ thuật nhãn điện tử (Điều 55)",v:"Phải dạng mã hóa có thể quét bằng thiết bị thông dụng. Tuân thủ tiêu chuẩn ISO/IEC 18975. Gắn trực tiếp trên HH/bao bì, dễ quan sát, không bị che khuất, không bong tróc trong lưu thông. Nội dung phải đồng nhất với nhãn vật lý và cho phép cập nhật, truy xuất nguồn gốc"},
+      {k:"Bán hàng online (Điều 41 khoản 5-6)",v:"Tổ chức/cá nhân bán trên TMĐT: công khai toàn bộ nội dung nhãn (trừ NSX/HSD/số lô từng sản phẩm cụ thể), cập nhật chính xác, bảo đảm hàng đến tay NTD đúng nhãn. Chủ nền tảng TMĐT: đảm bảo người bán khai báo đầy đủ thông tin nhãn; kết nối với CSDL nhãn quốc gia; lưu trữ dữ liệu đầy đủ an toàn"}
+    ]}
+  ],
+  ghi_chu:"⚡ Thay thế HOÀN TOÀN NĐ 43/2017 + NĐ 111/2021 từ 23/01/2026. Văn bản nhãn hàng hóa hiện hành duy nhất.",mau:"secondary",thu_tu:9,lien_ket:["ND69"]},
+  {id:"ND128_102",ky_hieu:"NĐ 128/2020 + NĐ 102/2021",ten:"Xử phạt vi phạm hành chính lĩnh vực hải quan",co_quan:"Chính phủ",hieu_luc:"10/12/2020",loai:"Nghị định",cap:"Nghị định",nhom:["xu_phat","tat_ca"],tinh_huong:["kiem_tra_sau_thong_quan","phap_ly"],dieu_tiet:["Mức phạt khai sai mã HS – truy thu thuế","Mức phạt khai thấp trị giá hải quan","Phạt vi phạm lưu giữ chứng từ (5 năm)","Phạt vi phạm nhãn hàng hóa","Buộc tái xuất hàng cấm, hàng không đủ điều kiện"],chi_tiet:[
+    {nhom:"Nguyên tắc xử phạt & thời hiệu – Điều 4-5 (NĐ128+102)",icon:"info",items:[
+      {k:"Thời hiệu – hành vi về thuế (Điều 4 khoản 1)",v:"Hành vi TRỐN THUẾ và KHAI SAI dẫn đến thiếu thuế: thời hiệu 5 NĂM kể từ ngày hành vi vi phạm. Hết thời hiệu xử phạt: vẫn phải NỘP ĐỦ số tiền thuế thiếu/miễn/giảm/hoàn/không thu không đúng"},
+      {k:"Thời hiệu – vi phạm thủ tục HQ khác (Điều 4 khoản 2+5)",v:"Thực hiện theo Điều 6 Luật XLVPHC: 1 năm (hành vi đã kết thúc) hoặc 2 năm (hành vi đang thực hiện). Thời điểm chấm dứt hành vi: vi phạm TTHQ = lúc nộp/khai; vi phạm trốn thuế = lúc thông quan; hàng cấm/lậu = liên tục đến lúc phát hiện"},
+      {k:"Mức phạt cá nhân vs tổ chức (Điều 5 khoản 3)",v:"Mức phạt tại Chương II là mức phạt của TỔ CHỨC. Cá nhân = ½ mức phạt tổ chức. Ngoại lệ: phạt Điều 9 (khai thuế thiếu) và Điều 14 (trốn thuế) áp dụng CÙNG MỨC cho cả cá nhân và tổ chức. Hộ kinh doanh/hộ gia đình xử phạt như cá nhân"},
+      {k:"Vi phạm nhiều lần – Điều 2a (NĐ102 bổ sung)",v:"Bị xử phạt về TỪ HẾT hành vi vi phạm. Ngoại lệ KHÔNG phạt riêng từng lần: vi phạm thời hạn nộp TK, nộp hồ sơ thuế, báo cáo QT, thông báo cơ sở SX nếu xảy ra nhiều lần trong cùng thời điểm kiểm tra"},
+      {k:"Biện pháp khắc phục hậu quả (Điều 5 khoản 5)",v:"9 biện pháp KPHQ: buộc tái xuất/đưa khỏi VN; buộc đi đúng tuyến đường/CK; buộc loại bỏ bao bì/nhãn vi phạm; buộc tiêu hủy hàng gây hại; buộc nộp lại tiền tương đương tang vật đã tẩu tán; buộc nộp đủ tiền thuế trốn/thiếu; buộc nộp lại thuế được miễn/hoàn sai; buộc dán tem 'Vietnam duty not paid'"}
+    ]},
+    {nhom:"Vi phạm thời hạn TTHQ & nộp hồ sơ thuế – Điều 7 (NĐ128)",icon:"clock",items:[
+      {k:"500k–1tr đồng (tổ chức)",v:"Khai/nộp/xuất trình hồ sơ HQ không đúng hạn; khai bổ sung sai số hiệu container/cảng xếp/phương tiện vận tải quá hạn; tái xuất phương tiện vận tải quá hạn; khai bổ sung trị giá HQ (giá chưa chính thức) quá hạn"},
+      {k:"2tr–5tr đồng (tổ chức)",v:"Nộp TK HQ khi chưa có hàng tập kết; không nộp báo cáo quyết toán/hàng miễn thuế đúng hạn; không xử lý NVL dư thừa/phế liệu/máy móc khi kết thúc HĐ GC đúng hạn; không tái nhập/tái xuất hàng hóa đúng hạn; không thông báo cơ sở SX thay đổi đúng hạn"},
+      {k:"5tr–10tr đồng (tổ chức)",v:"Không tái xuất hàng TN-TX đúng thời hạn; lưu giữ hàng quá cảnh/trung chuyển quá hạn; không làm thủ tục sau khi chuyển tiêu thụ nội địa/thay đổi mục đích đúng hạn"},
+      {k:"Biện pháp KPHQ Điều 7",v:"Buộc tái xuất/đưa ra khỏi VN đối với hàng TN quá hạn TXT; buộc đưa ra khỏi VN đối với hàng quá cảnh/trung chuyển quá hạn. Phương tiện vận tải TN ô tô chở người <24 chỗ quá hạn TXT: phạt riêng cao hơn (10tr–50tr theo mức độ)"}
+    ]},
+    {nhom:"Vi phạm khai HQ & khai thuế thiếu – Điều 8-9 (NĐ128)",icon:"alert-triangle",items:[
+      {k:"Khai sai tên hàng/mã HS/trị giá/XK (Điều 8)",v:"Khai sai hàng miễn thuế, hàng thuế suất 0%: 1tr–2tr đồng (tổ chức). Khai sai hàng chịu thuế (tên hàng, chủng loại, CL, trị giá, xuất xứ, mã HS): 3tr–5tr đồng (tổ chức). Khai sai hàng kho ngoại quan/kho bảo thuế: 5tr–10tr đồng (tổ chức)"},
+      {k:"Đã làm TTHQ nhưng không XK đủ (Điều 8 khoản 5)",v:"Phạt 20tr–40tr đồng (tổ chức); cá nhân 10tr–20tr đồng. Áp dụng khi hàng XK đã TQ nhưng thực tế không xuất hoặc xuất thiếu. Không áp dụng nếu TK đã mất hiệu lực theo khoản 2 Điều 25 Luật HQ"},
+      {k:"Tự phát hiện khai bổ sung quá hạn (Điều 8 khoản 6)",v:"Phạt bằng ½ mức phạt chính của hành vi tương ứng nếu tự phát hiện và khai bổ sung. Ví dụ: vi phạm khoản 3 thông thường phạt 3tr–5tr, tự phát hiện KBS quá hạn chỉ phạt 1.5tr–2.5tr"},
+      {k:"Khai thuế thiếu – phạt 10% (Điều 9 khoản 2)",v:"Phạt 10% số thuế khai thiếu khi: tự phát hiện và KBS sau 60 ngày TQ nhưng trước QĐ KSTQ/thanh tra; hoặc KBS báo cáo QT quá hạn nhưng trước QĐ kiểm tra báo cáo QT. Ngưỡng áp dụng: chênh lệch thuế ≥500k đồng/TK (cá nhân) hoặc ≥1tr đồng/TK (tổ chức)"},
+      {k:"Khai thuế thiếu – phạt 20% (Điều 9 khoản 3)",v:"Phạt 20% số thuế khai thiếu khi: HQ phát hiện trong TTHQ (luồng 2/3); HQ phát hiện qua KSTQ/thanh tra; hoặc người khai tự phát hiện KBS SAU KHI có kết luận KSTQ. Buộc nộp đủ số thuế thiếu trong mọi trường hợp"}
+    ]},
+    {nhom:"Trốn thuế – Điều 14 (NĐ128)",icon:"shield-off",items:[
+      {k:"12 hành vi trốn thuế (Điều 14 khoản 1)",v:"(a) Dùng CT không hợp pháp/sửa chữa CT; (b) Khai sai mã HS/thuế suất đã được BTC/HQ hướng dẫn; (c) Vi phạm Đ9 khoản 3b/c/d không nộp thuế; (d) Làm TT XK nhưng không XK sản phẩm GC/SXXK/DNCX; (đ) Khai sai hàng XK; (e) Không khai NVL mua trong nước có thuế XK; (g) Dùng hàng miễn/không thuế sai mục đích; (h) Khai sai hàng NK từ KPTQ; (i) Không ghi sổ kế toán; (k) Bán hàng miễn thuế sai đối tượng/định lượng; (l) Cấu kết NK hàng trốn thuế"},
+      {k:"Mức phạt trốn thuế (Điều 14 khoản 2)",v:"Không tình tiết tăng nặng: phạt 1 lần số thuế trốn. Có tình tiết tăng nặng: mỗi TT tăng nặng +0.2 lần, tối đa 3 lần. Áp dụng CÙNG MỨC cho cả cá nhân và tổ chức. Luôn buộc nộp đủ số thuế trốn"}
+    ]},
+    {nhom:"Vi phạm giám sát HQ & ghi nhãn hàng NK – Điều 12, 22 (NĐ128)",icon:"tag",items:[
+      {k:"Vi phạm giám sát – nhẹ (Điều 12 khoản 1-3)",v:"5tr–10tr: chuyển tải/chia tách lô hàng trong KV giám sát không đúng quy định; tiêu hủy phế liệu không thông báo HQ; đưa NVL đến cơ sở khác không thông báo. 10tr–20tr: vận chuyển QC/TNTX sai tuyến đường/CK; tự ý thay bao bì nhãn hàng; không bảo quản nguyên trạng; lưu giữ sai địa điểm. 20tr–30tr: phá niêm phong HQ trong vận chuyển bình thường"},
+      {k:"Tiêu thụ hàng đang giám sát HQ (Điều 12 khoản 4-6)",v:"30tr–40tr: tiêu thụ hàng đang chịu GS HQ (trừ trường hợp đặc biệt). 40tr–50tr: tiêu thụ hàng đã đưa về BQ chờ TQ. 60tr–80tr: phá niêm phong trong trường hợp hàng nghi vấn vi phạm. Cộng: buộc nộp lại tiền tương đương tang vật đã tẩu tán"},
+      {k:"Nhãn gốc NK sai nội dung (Điều 22 khoản 2)",v:"Phạt theo trị giá hàng vi phạm: <5tr→0.5tr–1tr; 5-10tr→1tr–3tr; 10-20tr→3tr–7tr; 20-30tr→7tr–10tr; 30-50tr→10tr–15tr; 50-70tr→15tr–20tr; 70-100tr→20tr–25tr; ≥100tr→25tr–30tr đồng (mức phạt tổ chức)"},
+      {k:"NK không có nhãn gốc (Điều 22 khoản 3)",v:"Phạt cao hơn khoản 2: <5tr→1tr–3tr; 5-10tr→3tr–5tr; 10-20tr→5tr–10tr; 20-30tr→10tr–15tr; 30-50tr→15tr–25tr; 50-70tr→25tr–35tr; 70-100tr→35tr–50tr; ≥100tr→50tr–60tr đồng. BPKPHQ: buộc tái xuất hoặc buộc nộp lại tiền tương đương tang vật đã tẩu tán"}
+    ]},
+    {nhom:"Thẩm quyền xử phạt của HQ – Điều 29 (NĐ128 được NĐ102 sửa)",icon:"users",items:[
+      {k:"Công chức HQ đang thi hành công vụ",v:"Phạt cảnh cáo; phạt tiền ≤500k đồng (cá nhân), ≤1tr đồng (tổ chức)"},
+      {k:"Đội trưởng/Tổ trưởng thuộc Chi cục HQ",v:"Phạt cảnh cáo; phạt tiền ≤5tr đồng (cá nhân), ≤10tr đồng (tổ chức)"},
+      {k:"Chi cục trưởng Chi cục HQ / Chi cục KSTQ / Đội trưởng Kiểm soát Cục HQ",v:"Phạt cảnh cáo; phạt tiền ≤25tr đồng (cá nhân), ≤50tr đồng (tổ chức); tịch thu TV ≤50tr (cá nhân) / ≤100tr (tổ chức); áp dụng BPKPHQ"},
+      {k:"Cục trưởng Cục Điều tra CBL / Cục KSTQ / Cục HQ tỉnh-TP",v:"Phạt cảnh cáo; phạt tiền ≤50tr đồng (cá nhân), ≤100tr đồng (tổ chức); tịch thu tang vật (không giới hạn); áp dụng BPKPHQ"},
+      {k:"Tổng cục trưởng TCHQ",v:"Phạt cảnh cáo; phạt tiền ≤100tr đồng (cá nhân), ≤200tr đồng (tổ chức); tịch thu tang vật (không giới hạn); áp dụng đầy đủ BPKPHQ"},
+      {k:"Thi hành BPKPHQ – Điều 33a (NĐ102 bổ sung)",v:"Buộc tái xuất: HQ giám sát từ nơi lưu giữ đến CK xuất, xác nhận bằng VB. Tiêu hủy: người vi phạm lập biên bản tiêu hủy có HQ giám sát, nộp 01 bản cho HQ. Nộp tiền thuế trốn/thiếu: ghi trong QĐ ấn định thuế. Dán tem 'Vietnam duty not paid': trước khi bày bán tại CHMT hoặc trước khi giao hàng"}
+    ]}
+  ],
+  ghi_chu:"⚠️ Đang có dự thảo thay thế NĐ 128 (lấy ý kiến 2026, chưa ban hành chính thức).",mau:"error",thu_tu:10,lien_ket:["54VBHN","46VBHN","ND69"]},
+  {id:"DMCDK",ky_hieu:"TRA CỨU NHANH – Danh mục cấm & có điều kiện NK",ten:"Bảng tra cứu: Hàng CẤM NK và NK CÓ ĐIỀU KIỆN (NĐ 69/2018)",co_quan:"Tổng hợp từ NĐ 69/2018",hieu_luc:"Cập nhật 2026",loai:"Tham chiếu",cap:"Tham chiếu",nhom:["hang_hoa_cam","tat_ca"],tinh_huong:["hang_hoa_cam","kiem_tra_ho_so","phap_ly"],dieu_tiet:["BƯỚC 1: Xác định mã HS → đối chiếu Phụ lục I NĐ69 → loại trừ hàng cấm","BƯỚC 2: Đối chiếu Phụ lục III NĐ69 → xác định hàng có điều kiện","BƯỚC 3: Tra văn bản chuyên ngành → xác định hồ sơ, điều kiện cụ thể","CẤM NK: vũ khí, pháo, hóa chất Bảng 1, văn hóa phẩm cấm, hàng tiêu dùng đã qua sử dụng...","CÓ ĐIỀU KIỆN: thuốc, hóa chất CN, máy móc cũ, phế liệu, kiểm dịch động thực vật..."],
+  chi_tiet:[
+    {nhom:"HÀNG CẤM NHẬP KHẨU – Phụ lục I NĐ 69/2018",icon:"ban",items:[
+      {k:"Vũ khí, đạn dược, vật liệu nổ, CCHT chuyên dụng",v:"TUYỆT ĐỐI CẤM NK thương mại. Chỉ được NK theo cơ chế đặc biệt do Thủ tướng phê duyệt (mục đích nghiên cứu, đặc dụng). Cơ quan: Bộ Quốc phòng, Bộ Công an"},
+      {k:"Pháo các loại, đèn trời, thiết bị gây nhiễu",v:"CẤM. Trừ pháo hiệu an toàn hàng hải theo hướng dẫn Bộ GTVT. Không có hồ sơ NK thương mại thông thường. Cơ quan: Bộ Công an, Bộ CT"},
+      {k:"Hóa chất Bảng 1 Công ước CWC",v:"CẤM thương mại. Chỉ NK trong trường hợp đặc biệt theo GP của cơ quan có thẩm quyền (hiệu lực 6 tháng/lô). Cơ quan: Bộ Công Thương (Cục Hóa chất)"},
+      {k:"SP văn hóa, xuất bản phẩm cấm phổ biến lưu hành",v:"CẤM. Không có hồ sơ NK thương mại. Cơ quan: Bộ Văn hóa, Thể thao và Du lịch"},
+      {k:"Mẫu vật ĐV, TV hoang dã nguy cấp CITES Phụ lục I vì thương mại",v:"CẤM vì mục đích thương mại. NK nghiên cứu KH: được với điều kiện. Cơ quan: Bộ Nông nghiệp & Môi trường"},
+      {k:"Hàng tiêu dùng đã qua sử dụng",v:"CẤM: dệt may, giày dép, quần áo, điện tử, điện lạnh, điện gia dụng, đồ gia dụng gốm/sứ/thủy tinh/kim loại/nhựa/cao su, trang trí nội thất. Cơ quan: Bộ CT"},
+      {k:"Thiết bị y tế đã qua sử dụng",v:"CẤM. Cơ quan: Bộ Y tế"},
+      {k:"Phương tiện tay lái phải (xe đạp, mô tô, xe gắn máy đã qua sử dụng)",v:"CẤM. Trừ xe chuyên dụng hoạt động trong phạm vi hẹp theo QĐ Thủ tướng. Cơ quan: Bộ CT, Bộ GTVT"}
+    ]},
+    {nhom:"HÀNG NHẬP KHẨU CÓ ĐIỀU KIỆN – Phụ lục III NĐ 69/2018",icon:"alert-circle",items:[
+      {k:"Thuốc, nguyên liệu làm thuốc, mỹ phẩm, TPBVSK, hàng y tế",v:"CÓ ĐIỀU KIỆN. Hồ sơ: Hồ sơ HQ cơ bản + Giấy phép NK (Bộ Y tế) HOẶC đăng ký lưu hành + CFS. Cơ quan: Bộ Y tế (Cục Quản lý Dược/Cục ATTP)"},
+      {k:"Hóa chất CN, tiền chất, chế phẩm diệt côn trùng/khuẩn",v:"CÓ ĐIỀU KIỆN. Hồ sơ: Hồ sơ HQ + GP NK HC KSĐB (Cục HC/UBND tỉnh) HOẶC khai báo HC NK qua hệ thống + SDS. Cơ quan: Bộ CT (Cục Hóa chất)"},
+      {k:"Máy móc, thiết bị, dây chuyền CN; máy móc đã qua sử dụng",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + Chứng thư giám định (tuổi ≤10 năm, tiêu chuẩn G7/HQ – theo QĐ 18/2019). Trường hợp dây chuyền: thêm chứng nhận hiệu suất ≥85%. Cơ quan: Bộ KHCN"},
+      {k:"Phế liệu NK làm nguyên liệu SX",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + Giấy phép môi trường/xác nhận đủ điều kiện + kiểm tra chất lượng phế liệu. Cơ quan: Bộ Tài nguyên và Môi trường"},
+      {k:"Động vật, thực vật, giống cây trồng/vật nuôi, SP cần kiểm dịch",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP NK hoặc đăng ký kiểm dịch trước khi NK + Giấy phép kiểm dịch NK (sau kiểm tra). Cơ quan: Bộ Nông nghiệp & Môi trường (Cục BVTV/Cục Thú y)"},
+      {k:"Hàng QP-AN, mật mã dân sự, SP đặc thù",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP NK/chấp thuận của cơ quan chuyên ngành (Bộ QP/CA/TT&TT). Cơ quan: Bộ Quốc phòng, Bộ Công an, Ban Cơ yếu Chính phủ"},
+      {k:"SP CNTT, phát thanh truyền hình, thiết bị TT quản lý",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + giấy phép/hợp quy + khai báo. Cơ quan: Bộ Thông tin và Truyền thông (Cục Viễn thông/Cục Phát thanh truyền hình)"},
+      {k:"Tiền chất thuốc nổ, vật liệu nổ CN, hóa chất nguy hiểm đặc thù",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP NK + hồ sơ AT, vận chuyển hàng nguy hiểm. Cơ quan: Bộ CT (Cục Hóa chất/Cục Kỹ thuật An toàn)"}
+    ]},
+    {nhom:"Quy trình tra cứu 3 bước",icon:"search",items:[
+      {k:"BƯỚC 1 – Xác định mã HS",v:"Tra cứu mã HS chính xác 6-8 số. Đây là khóa tra cứu cho tất cả các bước tiếp theo. Không có mã HS chính xác → kết quả tra cứu không đáng tin cậy"},
+      {k:"BƯỚC 2 – Đối chiếu Phụ lục I NĐ 69",v:"Kiểm tra mã HS có trong Danh mục CẤM NK không (Phụ lục I NĐ 69/2018). Nếu có → KHÔNG ĐƯỢC NK thương mại. Nếu không → sang Bước 3"},
+      {k:"BƯỚC 3 – Đối chiếu Phụ lục III NĐ 69",v:"Kiểm tra mã HS có trong Danh mục CÓ ĐIỀU KIỆN không (Phụ lục III NĐ 69/2018). Nếu có → xác định điều kiện/GP cần thiết theo từng Bộ quản lý. Nếu không → NK tự do (chỉ làm TTHQ tại HQ)"},
+      {k:"Lưu ý quan trọng",v:"Bảng này là lớp ĐỊNH HƯỚNG BAN ĐẦU. Sau khi xác định nhóm hàng → bắt buộc tra thêm văn bản chuyên ngành cụ thể (hóa chất: NĐ 24/26/2026; phân bón: NĐ 84/2019; máy móc: QĐ 18/2019; thực phẩm: NĐ 15/2018; thiết bị y tế: NĐ 98/2021...)"}
+    ]}
+  ],
+  ghi_chu:"Bảng tra cứu nhanh tổng hợp. Xác định HS → tra Phụ lục I (cấm) → tra Phụ lục III (có điều kiện) → tra văn bản chuyên ngành.",mau:"warning",thu_tu:0,lien_ket:["ND69","L692025","L312018"]},
+
+  {id:"DMCDK_XK",ky_hieu:"TRA CỨU NHANH – Danh mục cấm & có điều kiện XK",ten:"Bảng tra cứu: Hàng CẤM XK và XK CÓ ĐIỀU KIỆN (NĐ 69/2018)",co_quan:"Tổng hợp từ NĐ 69/2018",hieu_luc:"Cập nhật 2026",loai:"Tham chiếu",cap:"Tham chiếu",nhom:["hang_hoa_cam","tat_ca"],tinh_huong:["hang_hoa_cam","kiem_tra_ho_so","phap_ly"],dieu_tiet:["BƯỚC 1: Xác định mã HS → đối chiếu Phụ lục I NĐ69 → loại trừ hàng cấm XK","BƯỚC 2: Đối chiếu Phụ lục III NĐ69 → xác định hàng XK có điều kiện","CẤM XK: vũ khí/TTKT quân sự, SP mật mã bí mật NN, cổ vật/bảo vật, gỗ rừng tự nhiên, CITES, HC Bảng 1","CÓ ĐIỀU KIỆN: tiền chất CN, khoáng sản, gỗ không thuộc cấm, giống cây/vật nuôi, thiết bị mật mã, VLN CN"],
+  chi_tiet:[
+    {nhom:"HÀNG CẤM XUẤT KHẨU – Phụ lục I NĐ 69/2018",icon:"ban",items:[
+      {k:"Vũ khí, đạn dược, VLN (trừ VLN CN), TTKT quân sự",v:"TUYỆT ĐỐI CẤM XK thương mại. Cơ quan: Bộ Quốc phòng. Ngoại lệ theo cơ chế đặc biệt Thủ tướng"},
+      {k:"Sản phẩm mật mã bảo vệ thông tin bí mật Nhà nước",v:"CẤM. Cơ quan: Bộ Quốc phòng (Ban Cơ yếu Chính phủ). Không có hồ sơ XK thương mại"},
+      {k:"Di vật, cổ vật, bảo vật quốc gia; SP văn hóa bị đình chỉ/thu hồi/tịch thu",v:"CẤM. Cổ vật không thuộc diện cấm tuyệt đối: XK có điều kiện (xem phần có ĐK). Cơ quan: Bộ VHTTDL"},
+      {k:"Xuất bản phẩm cấm phổ biến; tem bưu chính cấm kinh doanh",v:"CẤM. Cơ quan: Bộ Thông tin và Truyền thông"},
+      {k:"Gỗ tròn, gỗ xẻ từ gỗ rừng tự nhiên trong nước",v:"CẤM. Gỗ rừng trồng hợp pháp và gỗ NK: không thuộc diện cấm. Cơ quan: Bộ Nông nghiệp & Môi trường"},
+      {k:"Mẫu vật ĐV/TV hoang dã CITES Phụ lục I từ tự nhiên vì thương mại; tê giác/voi/hổ",v:"CẤM XK thương mại. NC khoa học: được với điều kiện. Cơ quan: Bộ Nông nghiệp & Môi trường"},
+      {k:"Hóa chất Bảng 1 CWC; HC thuộc danh mục cấm",v:"CẤM XK. Trường hợp đặc biệt (NK không dùng hết sau GP): được XK theo GP của cơ quan có thẩm quyền. Cơ quan: Bộ Công Thương (Cục Hóa chất)"}
+    ]},
+    {nhom:"HÀNG XK CÓ ĐIỀU KIỆN – Phụ lục III NĐ 69/2018",icon:"alert-circle",items:[
+      {k:"Tiền chất công nghiệp",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP XK HC KSĐB (Cục HC/UBND tỉnh) + hồ sơ AT vận chuyển. Cơ quan: Bộ Công Thương"},
+      {k:"Khoáng sản (trừ khoáng sản làm VLXD)",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP XK hoặc hồ sơ chứng minh nguồn gốc hợp pháp + đáp ứng tiêu chuẩn CL. Cơ quan: Bộ CT, Bộ TNMT"},
+      {k:"Gỗ, SP gỗ, lâm sản thuộc quản lý (không phải gỗ rừng tự nhiên cấm)",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + hồ sơ nguồn gốc lâm sản hợp pháp + GP XK (nếu thuộc diện GP) + kiểm dịch TV. Cơ quan: Bộ NN&MT"},
+      {k:"Giống cây/vật nuôi, ĐV/TV/thủy sản cần kiểm dịch hoặc cấp phép",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP XK (nếu có) + kiểm dịch ĐV/TV/thủy sản. Cơ quan: Bộ NN&MT (Cục BVTV/Cục Thú y/Cục Thủy sản)"},
+      {k:"Thuốc thú y, chế phẩm sinh học, hóa chất thú y",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP hoặc văn bản chấp thuận XK. Cơ quan: Bộ NN&MT (Cục Thú y)"},
+      {k:"Thiết bị, công nghệ đặc thù Bộ KHCN",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP XK theo pháp luật KH&CN. Cơ quan: Bộ Khoa học và Công nghệ"},
+      {k:"SP an toàn TT mạng, mật mã dân sự, thiết bị TT thuộc quản lý",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP XK hoặc xác nhận hợp quy. Cơ quan: Bộ TT&TT, Ban Cơ yếu Chính phủ"},
+      {k:"Hàng hóa có khả năng dùng mục đích quân sự, CCHT, VLN công nghiệp",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP XK của Bộ QP/CA/CT tùy loại. Cơ quan: Bộ Quốc phòng, Bộ Công an, Bộ Công Thương"},
+      {k:"Văn hóa phẩm XK không KD; di vật/cổ vật không cấm tuyệt đối",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP XK của Bộ VHTTDL + giám định nguồn gốc. Cơ quan: Bộ Văn hóa, Thể thao và Du lịch"},
+      {k:"Bưu gửi/bưu kiện XK thuộc diện kiểm soát; hàng quản lý chuyên ngành Bộ CT",v:"CÓ ĐIỀU KIỆN. Hồ sơ: HQ cơ bản + GP hoặc văn bản chấp thuận của Bộ CT. Cơ quan: Bộ Công Thương"}
+    ]},
+    {nhom:"Quy trình tra cứu & so sánh XK vs NK",icon:"search",items:[
+      {k:"BƯỚC 1 – Xác định mã HS",v:"Tra mã HS chính xác 6-8 số"},
+      {k:"BƯỚC 2 – Đối chiếu Phụ lục I (cấm XK)",v:"Nếu có → KHÔNG ĐƯỢC XK thương mại. Nếu không → Bước 3"},
+      {k:"BƯỚC 3 – Đối chiếu Phụ lục III (có điều kiện XK)",v:"Nếu có → xác định GP/điều kiện theo Bộ quản lý. Nếu không → XK tự do (chỉ làm TTHQ)"},
+      {k:"Khác biệt XK so với NK",v:"XK ÍT điều kiện hơn NK: không cần CFS, không kiểm tra CL NK, không kiểm tra AT kỹ thuật. Nhưng vẫn cần: kiểm dịch ĐV/TV/TS; kiểm tra nguồn gốc lâm sản; GP cho hàng đặc thù (khoáng sản, mật mã, VLN CN...)"}
+    ]}
+  ],
+  ghi_chu:"Bảng tra cứu nhanh hàng XK. HS → Phụ lục I (cấm XK) → Phụ lục III (có điều kiện XK) → văn bản chuyên ngành.",mau:"warning",thu_tu:0,lien_ket:["DMCDK","ND69"]},
+
+  // ── NHÓM HÓA CHẤT ──
+  {id:"L692025",ky_hieu:"Luật 69/2025/QH15",ten:"Luật Hóa chất 2025",co_quan:"Quốc hội",hieu_luc:"01/01/2026",loai:"Luật",cap:"Luật",nhom:["hoa_chat"],tinh_huong:["hang_hoa_cam","khai_bao","phap_ly"],dieu_tiet:["Điều 12: Khai báo hóa chất nhập khẩu","Phân loại: Cấm / KS đặc biệt Nhóm 1-2 / Thông thường","Nghĩa vụ khai báo trước khi nhập khẩu","Quản lý hóa chất nguy hiểm trong sản phẩm, hàng hóa"],chi_tiet:[
+    {nhom:"Phân loại 4 nhóm hóa chất theo mức kiểm soát – Điều 9",icon:"layers",items:[
+      {k:"HC có điều kiện",v:"Chất/hỗn hợp nguy hiểm thuộc Danh mục HC SX-KD có điều kiện (Phụ lục NĐ24/2026). SX/KD cần: Giấy CN đủ điều kiện do UBND tỉnh cấp, hiệu lực 5 năm. XNK được tự do nếu có GCN SX/KD tương ứng"},
+      {k:"HC cần kiểm soát đặc biệt (HC KSĐB)",v:"Danh mục HC KSĐB do Chính phủ ban hành (Phụ lục NĐ24/2026). Gồm: HC thuộc CWC Bảng 1/2/3; tiền chất ma túy; tiền chất thuốc nổ; HC Phụ lục III Rotterdam. SX/KD cần: Giấy phép (nhóm 1: Cục HC/Bộ CT; nhóm 2: UBND tỉnh) hiệu lực 5 năm. XNK cần GP riêng hiệu lực 6 tháng/lô"},
+      {k:"HC cấm",v:"Theo Danh mục tại Luật Đầu tư. KHÔNG được thực hiện bất kỳ hoạt động HC nào. Trường hợp đặc biệt: tổ chức SX/NK/sử dụng theo GP của cơ quan có thẩm quyền; GP NK 6 tháng/lô. KHÔNG được TNTX, tạm xuất TN, chuyển khẩu, quá cảnh HC cấm"},
+      {k:"HC thông thường",v:"Không thuộc 3 nhóm trên. Hoạt động HC tuân thủ quy định về AT, BVMT. XNK tự do, chỉ cần khai báo HC NK trên hệ thống CSDL chuyên ngành (trừ được miễn theo Điều 12)"}
+    ]},
+    {nhom:"Xuất nhập khẩu hóa chất – Điều 12",icon:"arrow-right-left",items:[
+      {k:"XNK HC có điều kiện",v:"Tổ chức SX được XK HC do mình SX (theo GCN SX). Tổ chức KD được XK/NK (theo GCN KD). Tổ chức/cá nhân SỬ DỤNG được NK HC có điều kiện để phục vụ mục đích sử dụng"},
+      {k:"XNK HC cần kiểm soát đặc biệt",v:"Cần GP XK/GP NK riêng ngoài GP SX/KD. GP cấp cho từng hóa đơn XK/NK, hiệu lực 6 THÁNG từ ngày cấp. Được gia hạn nếu hết hạn mà chưa XK/NK xong. NK để SỬ DỤNG: phải công bố loại HC và mục đích sử dụng trên CSDL chuyên ngành trước"},
+      {k:"XNK HC cấm",v:"NK: cần GP NK từ cơ quan có thẩm quyền, cấp cho từng lô, hiệu lực 6 THÁNG. Chỉ NK đúng nội dung GP. XK: chỉ được khi NK không sử dụng hết sau thời hạn GP → phải thông báo cơ quan cấp GP để XK hoặc tiêu hủy"},
+      {k:"Khai báo HC NK (Điều 12 khoản 6)",v:"Mọi tổ chức/cá nhân NK HC PHẢI khai báo HC NK trên CSDL chuyên ngành hóa chất. MIỄN khai báo: tổ chức NK HC KSĐB và HC cấm (đã có GP riêng); và các trường hợp miễn trừ khác theo NĐ"}
+    ]},
+    {nhom:"Sản xuất, kinh doanh, sử dụng HC – Điều 10-11",icon:"factory",items:[
+      {k:"Giấy CN đủ điều kiện SX/KD HC có điều kiện",v:"UBND cấp tỉnh cấp. Hiệu lực 5 NĂM. Điều kiện: thành lập hợp pháp + có tài liệu pháp lý/an toàn/CSVC đầy đủ + đáp ứng AT/BVMT"},
+      {k:"Giấy phép SX/KD HC cần KSĐB",v:"Nhóm 1: Cục HC (Bộ CT) cấp. Nhóm 2: UBND tỉnh cấp. Hiệu lực 5 NĂM. Điều kiện chặt hơn HC có điều kiện (phòng ngừa thất thoát, an ninh HC...)"},
+      {k:"Giấy phép SX HC cấm",v:"Cơ quan có thẩm quyền cấp theo từng trường hợp đặc biệt. Hiệu lực 12 THÁNG"}
+    ]}
+  ],
+  ghi_chu:"Thay thế Luật Hóa chất 2007 từ 01/01/2026. Văn bản nền tảng hóa chất.",mau:"primary",thu_tu:1,lien_ket:["ND242026","ND262026","TT012026"]},
+  {id:"ND242026",ky_hieu:"NĐ 24/2026/NĐ-CP",ten:"Danh mục hóa chất thuộc phạm vi Luật Hóa chất 2025",co_quan:"Chính phủ",hieu_luc:"17/01/2026",loai:"Nghị định",cap:"Nghị định",nhom:["hoa_chat"],tinh_huong:["hang_hoa_cam","khai_bao"],dieu_tiet:["Tra cứu phân nhóm HC: Cấm / KS Nhóm 1 / KS Nhóm 2 / Thông thường","HC Bảng 1 (CWC) – cấm tuyệt đối","HC tiền chất thuốc nổ","HC tiền chất ma túy","Danh mục HC cần giấy phép nhập khẩu"],chi_tiet:[
+    {nhom:"Danh sách Phụ lục – 11 danh mục hóa chất (NĐ 24/2026)",icon:"list",items:[
+      {k:"Phụ lục I",v:"Danh mục HC cơ bản thuộc lĩnh vực công nghiệp HC trọng điểm (hóa dầu, hóa dược, cao su, phân bón hàm lượng cao, hydro...)"},
+      {k:"Phụ lục II",v:"Danh mục HC sản xuất, kinh doanh CÓ ĐIỀU KIỆN – cần Giấy CN đủ điều kiện SX/KD do UBND tỉnh cấp"},
+      {k:"Phụ lục III",v:"Danh mục HC cần kiểm soát đặc biệt nhóm 1 và nhóm 2. Nhóm 1 (Cục HC cấp phép); Nhóm 2 (UBND tỉnh cấp phép)"},
+      {k:"Phụ lục IV",v:"Danh mục HC nguy hiểm phải xây dựng Kế hoạch phòng ngừa, ứng phó sự cố (Bảng A: ngưỡng tuyệt đối; Bảng B: ngưỡng tính toán tỉ lệ cộng gộp)"},
+      {k:"Phụ lục V",v:"Danh mục HC không được sử dụng trong lĩnh vực quản lý của Bộ Công Thương"},
+      {k:"Tiền chất ma túy (NĐ 57/2022)",v:"Tiền chất thuốc lắc (thường: Bảng 1 – kiểm soát rất chặt như Ephedrine, Pseudoephedrine, Acetic anhydride...; Bảng 2 – kiểm soát có giám sát; Bảng 3 – báo cáo khi XNK). Cơ quan quản lý: Bộ CA (tiền chất MT) và Bộ CT (tiền chất thuốc nổ)"}
+    ]},
+    {nhom:"Quy trình tra cứu nhóm quản lý HC",icon:"search",items:[
+      {k:"Bước 1: Xác định tên chất và mã CAS",v:"Tra cứu tên IUPAC, tên thương mại, mã CAS (Chemical Abstract Service). Đây là dữ liệu quan trọng nhất để tìm đúng danh mục"},
+      {k:"Bước 2: Tra Phụ lục III NĐ24 (HC KSĐB)",v:"HC KSĐB nhóm 1 và nhóm 2 yêu cầu Giấy phép SX/KD/XNK riêng. Nếu có trong danh mục này → dừng, làm GP ngay trước khi NK"},
+      {k:"Bước 3: Tra Phụ lục CWC (HC Bảng 1/2/3)",v:"Hóa chất Bảng 1 CWC = HC KSĐB nhóm 1 (nguy hiểm nhất, kiểm soát chặt nhất). Bảng 2/3 = HC KSĐB nhóm 2. Tra theo mã CAS hoặc tên IUPAC"},
+      {k:"Bước 4: Tra Phụ lục II NĐ24 (HC có điều kiện)",v:"Nếu không thuộc KSĐB → tra HC có điều kiện. Cần GCN đủ điều kiện SX/KD, nhưng XNK linh hoạt hơn. Phổ biến: axit đậm đặc, kiềm mạnh, dung môi công nghiệp, khí nén..."},
+      {k:"Bước 5: HC thông thường",v:"Không xuất hiện trong Phụ lục II, III NĐ24 và không thuộc CWC → HC thông thường. Chỉ cần khai báo HC NK trên hệ thống CSDL chuyên ngành"}
+    ]}
+  ],
+  ghi_chu:"BƯỚC TRA CỨU ĐẦU TIÊN khi có lô hàng hóa chất để xác định nhóm quản lý.",mau:"warning",thu_tu:2,lien_ket:["L692025","ND262026","VBHN02BCT"]},
+  {id:"ND262026",ky_hieu:"NĐ 26/2026/NĐ-CP",ten:"Quản lý hoạt động hóa chất và hóa chất nguy hiểm trong sản phẩm",co_quan:"Chính phủ",hieu_luc:"17/01/2026",loai:"Nghị định",cap:"Nghị định",nhom:["hoa_chat"],tinh_huong:["khai_bao","phap_ly","kiem_tra_ho_so"],dieu_tiet:["Điều 6: Khai báo HC thông thường khi NK","Điều 18: Thủ tục NK HC cấm (Giấy phép đặc biệt)","Giấy phép NK HC KS đặc biệt Nhóm 1 (Bộ CT cấp – 6 tháng)","Giấy phép HC Nhóm 2 (UBND tỉnh/Cục HC cấp)","Yêu cầu SDS/MSDS cho HC nguy hiểm"],chi_tiet:[
+    {nhom:"Khai báo HC NK & điều kiện hoạt động HC – NĐ 26/2026",icon:"clipboard-check",items:[
+      {k:"Điều 6 – Khai báo HC thông thường NK",v:"Tổ chức/cá nhân NK HC thông thường (không phải KSĐB, không phải cấm) phải khai báo trên CSDL chuyên ngành. Khai báo ONLINE tại hệ thống Cục HC trước khi thông quan. Nội dung khai: tên HC, mã CAS, SL, mục đích sử dụng, thông tin nhà SX"},
+      {k:"Điều 18 – Thủ tục NK HC cấm (Giấy phép đặc biệt)",v:"Nộp hồ sơ cho Cục HC (Bộ CT): Mẫu 02a TT01 + chứng từ minh chứng mục đích đặc biệt (theo Luật Đầu tư/Luật QLNT). GP NK cấp cho từng lô, hiệu lực 6 THÁNG. Sau NK phải lập sổ theo dõi + báo cáo định kỳ"},
+      {k:"GP NK HC KSĐB – phân cấp thẩm quyền",v:"Nhóm 1 (VD: HC Bảng 1 CWC, tiền chất ma túy Bảng 1): Cục HC cấp. Nhóm 2 (VD: HC Bảng 2/3 CWC, tiền chất thuốc nổ nhóm 2): UBND tỉnh cấp. Hồ sơ: Mẫu 07a TT01 + GP SX/KD còn hiệu lực + HĐ mua bán + tài liệu kỹ thuật"},
+      {k:"Yêu cầu SDS/MSDS cho HC nguy hiểm",v:"Bắt buộc lập và cung cấp SDS (17 mục theo Mẫu Phụ lục I TT01) khi: SX, NK, KD, vận chuyển, tồn trữ HC nguy hiểm. SDS phải bằng tiếng Việt, cập nhật khi có thông tin mới, lưu ≥3 năm"}
+    ]}
+  ],
+  ghi_chu:"Văn bản TỰC TIẾP NHẤT cho thủ tục NK hóa chất. Tra sau NĐ 24/2026.",mau:"primary",thu_tu:3,lien_ket:["L692025","ND242026","TT012026","ND252026"]},
+  {id:"TT012026",ky_hieu:"TT 01/2026/TT-BCT",ten:"Hướng dẫn thi hành Luật Hóa chất và NĐ 26/2026",co_quan:"Bộ Công Thương",hieu_luc:"17/01/2026",loai:"Thông tư",cap:"Thông tư",nhom:["hoa_chat"],tinh_huong:["khai_bao","kiem_tra_ho_so","phap_ly"],dieu_tiet:["Mẫu 13a (Phụ lục XIII): Khai báo HC NK","Nội dung bắt buộc của Phiếu an toàn hóa chất SDS","Phân cấp thẩm quyền cấp giấy phép NK HC","Hướng dẫn ghi nhãn hóa chất nguy hiểm"],chi_tiet:[
+    {nhom:"Phân cấp thẩm quyền cấp phép HC – Điều 3 (TT01)",icon:"users",items:[
+      {k:"Cục Hóa chất (Bộ CT) cấp",v:"GP SX HC cấm (lĩnh vực CN); GP SX/KD HC KSĐB nhóm 1 (cho tổ chức có SX/KD tại nhiều tỉnh); GP XK/NK HC KSĐB nhóm 1; GCN đủ điều kiện dịch vụ tồn trữ HC (kho phải xây dựng Kế hoạch PNUPSC); tiếp nhận thông tin khai báo HC NK"},
+      {k:"UBND cấp tỉnh cấp",v:"GP SX/KD HC KSĐB nhóm 2 (cho tổ chức trụ sở trong tỉnh); GP XK/NK HC KSĐB nhóm 2; GCN đủ điều kiện SX/KD HC có điều kiện. Nếu tổ chức SX/KD tại nhiều tỉnh: tỉnh trụ sở chính phối hợp tỉnh nơi có cơ sở, thời hạn 10 ngày làm việc"}
+    ]},
+    {nhom:"Phiếu an toàn hóa chất (SDS) – Điều 5 (TT01)",icon:"file-text",items:[
+      {k:"17 mục nội dung SDS bắt buộc",v:"(1) Nhận dạng HC + nhà cung cấp; (2) Đặc tính nguy hiểm; (3) Thành phần; (4) Sơ cứu y tế; (5) Xử lý hỏa hoạn; (6) Phòng ngừa/ứng phó sự cố; (7) Sử dụng/bảo quản; (8) Kiểm soát phơi nhiễm/PPE; (9) Tính chất lý-hóa; (10) Ổn định/phản ứng; (11) Độc tính; (12) Sinh thái; (13) Thải bỏ; (14) Vận chuyển; (15) Pháp luật; (16) Thông tin khác; Mẫu tại Phụ lục I TT01"},
+      {k:"Lưu ý SDS khi NK hóa chất",v:"SDS là tài liệu bắt buộc kèm theo khi NK/vận chuyển/sử dụng HC nguy hiểm. Phải có bằng tiếng Việt. SDS là căn cứ để phân loại nhóm HC và xác định nghĩa vụ tuân thủ"}
+    ]},
+    {nhom:"Biểu mẫu hồ sơ giấy phép HC – Điều 6 (TT01)",icon:"clipboard",items:[
+      {k:"GP NK/XK HC cấm (Phụ lục II TT01)",v:"Mẫu 02a: VB đề nghị cấp GP NK HC cấm. Mẫu 02b: VB đề nghị cấp lại/điều chỉnh GP NK HC cấm. Mẫu 02c: Mẫu GP NK HC cấm. Tương tự cho GP SX HC cấm: Mẫu 03a/03b/03c (Phụ lục III)"},
+      {k:"GP SX/KD HC KSĐB (Phụ lục VI TT01)",v:"Mẫu 06a: VB đề nghị cấp GP SX/KD HC KSĐB. Mẫu 06b: VB đề nghị cấp lại/điều chỉnh. Mẫu 06c: Mẫu GP SX/KD HC KSĐB"},
+      {k:"GP XK/NK HC KSĐB (Phụ lục VII TT01)",v:"Mẫu 07a: VB đề nghị cấp GP XK/NK HC KSĐB. Mẫu 07b: VB đề nghị cấp lại/điều chỉnh/gia hạn. Mẫu 07c: Mẫu GP XK/NK HC KSĐB"},
+      {k:"Phương án kiểm soát thất thoát (Phụ lục VIII)",v:"Mẫu bắt buộc cho tổ chức SX/KD/XNK HC KSĐB và HC cấm. Lập sổ theo dõi SX/NK/sử dụng/tồn trữ theo Phụ lục V (HC cấm) và Phụ lục IX (phiếu kiểm soát mua bán HC KSĐB)"}
+    ]},
+    {nhom:"Nguyên tắc phân loại HC & khai báo NK – Điều 7-8 (TT01)",icon:"tag",items:[
+      {k:"Phân loại HC (Điều 7)",v:"Theo hệ thống GHS (Hệ thống hài hòa toàn cầu về phân loại và ghi nhãn HC). Bao gồm: HC nguy hiểm vật lý (dễ cháy, nổ, ôxy hóa...); HC nguy hiểm sức khỏe (độc cấp/mãn tính, ăn mòn, ung thư...); HC nguy hiểm môi trường. Phân loại là cơ sở để ghi nhãn và lập SDS"},
+      {k:"Khai báo HC NK (Điều 3, mục e)",v:"Cục HC tiếp nhận thông tin khai báo HC NK trên hệ thống CSDL chuyên ngành. Đây là thủ tục thực hiện ONLINE, trước khi thông quan lô HC thông thường (không phải KSĐB, không phải HC cấm)"}
+    ]}
+  ],
+  ghi_chu:"Tra cứu mẫu biểu và thủ tục cụ thể khi nộp hồ sơ giấy phép.",mau:"secondary",thu_tu:4,lien_ket:["ND262026","ND242026"]},
+  {id:"ND252026",ky_hieu:"NĐ 25/2026/NĐ-CP",ten:"An toàn, an ninh hóa chất & phát triển công nghiệp hóa chất",co_quan:"Chính phủ",hieu_luc:"17/01/2026",loai:"Nghị định",cap:"Nghị định",nhom:["hoa_chat"],tinh_huong:["phap_ly","kiem_tra_ho_so"],dieu_tiet:["Yêu cầu an toàn vận chuyển, bảo quản HC công nghiệp","Phòng ngừa, ứng phó sự cố hóa chất","Hóa chất thuộc diện an ninh hóa chất","Phát triển công nghiệp hóa chất trong nước"],chi_tiet:[
+    {nhom:"Kế hoạch phòng ngừa & ứng phó sự cố HC – Điều 33-34 (NĐ25)",icon:"shield",items:[
+      {k:"Đối tượng phải lập Kế hoạch PNUPSC",v:"Tổ chức/cá nhân hoạt động HC nguy hiểm có: (a) ≥1 HC thuộc Bảng A Phụ lục IV NĐ24 vượt ngưỡng tồn trữ; hoặc (b) Tổng tỉ lệ tồn trữ ∑qxi/QUXi ≥ 1"},
+      {k:"Nội dung Kế hoạch PNUPSC (Điều 33)",v:"Bắt buộc: (a) Thông tin HC, quy mô, công nghệ, địa lý/dân cư; (b) Dự báo nguy cơ sự cố, phân cấp sự cố; (c) Giải pháp phòng ngừa tại kho/vị trí nguy cơ; (d) Giải pháp ứng phó: phân vùng, kỹ thuật ứng phó, PPE, phối hợp ngoài cơ sở, sơ tán; (e) Kế hoạch diễn tập; (f) Khắc phục hậu quả"},
+      {k:"Thẩm định Kế hoạch PNUPSC (Điều 34)",v:"Hồ sơ: VB đề nghị + 09 bản Kế hoạch. Cơ quan thẩm định theo phân cấp. Phải diễn tập định kỳ để kiểm tra tính khả thi"}
+    ]},
+    {nhom:"Huấn luyện an toàn chuyên ngành HC – Điều 29-32 (NĐ25)",icon:"graduation-cap",items:[
+      {k:"Chu kỳ & đối tượng huấn luyện",v:"Định kỳ 02 NĂM/lần. Nhóm 1: Lãnh đạo cơ sở HC. Nhóm 2: Người phụ trách AT HC, giám sát viên, thủ kho. Nhóm 3: NLĐ trực tiếp tiếp xúc HC, nhân viên y tế"},
+      {k:"Nội dung huấn luyện Nhóm 2-3",v:"Pháp luật HC; nhận dạng nguy hiểm qua nhãn/hình đồ cảnh báo GHS; SDS của HC tại cơ sở; đặc tính nguy hiểm; quy trình AT; PPE đúng loại; quy trình ứng phó cụ thể từng HC; sơ cứu; thu gom và tiêu tẩy"}
+    ]},
+    {nhom:"An ninh HC & phát triển CN hóa chất (NĐ25)",icon:"lock",items:[
+      {k:"An ninh, kiểm soát HC",v:"Phương án kiểm soát thất thoát HC KSĐB/cấm theo Mẫu Phụ lục VIII TT01. Lập sổ theo dõi SX/NK/sử dụng/tồn trữ. Báo cáo cơ quan quản lý khi phát hiện thất thoát hoặc sự cố"},
+      {k:"Khoảng cách AT dự án HC",v:"Dự án HC phải đánh giá khoảng cách an toàn theo QCKT trong Báo cáo NC khả thi. Không được phê duyệt nếu không đáp ứng khoảng cách an toàn"},
+      {k:"Ưu đãi dự án CN HC trọng điểm",v:"Dự án SX hóa dược ≥160 tỷ; HC cơ bản/hóa dầu/cao su/phân bón/hydro ≥500 tỷ VNĐ được: ưu tiên giải ngân, đặt hàng, chỉ định thầu; cơ chế ưu đãi đặc biệt từ Nhà nước"}
+    ]}
+  ],
+  ghi_chu:"Áp dụng cho HC công nghiệp và HC thuộc diện an ninh.",mau:"secondary",thu_tu:5,lien_ket:["L692025","ND262026"]},
+  {id:"VBHN02BCT",ky_hieu:"02/VBHN-BCT (2026)",ten:"Thực hiện Công ước CWC – Hóa chất Bảng 1, 2, 3 (VBHN)",co_quan:"Bộ Công Thương",hieu_luc:"23/01/2026",loai:"VBHN",cap:"Nghị định",nhom:["hoa_chat"],tinh_huong:["hang_hoa_cam","phap_ly"],dieu_tiet:["HC Bảng 1 (CWC): Cấm tuyệt đối – xin phép đặc biệt","HC Bảng 2: Kiểm soát – phải khai báo & đăng ký","HC Bảng 3: Giám sát – khai báo khi NK","Thủ tục xin phép NK HC thuộc CWC","Nghĩa vụ báo cáo định kỳ với OPCW"],chi_tiet:[
+    {nhom:"Phân loại HC Bảng 1/2/3 theo CWC – Điều 5",icon:"alert-triangle",items:[
+      {k:"Bảng 1 – Nguy hiểm CỰC CAO",v:"HC độc hoặc tiền chất của vũ khí hóa học, rất ít/không có công dụng dân sự. VD: Sarin, Soman, VX, Mustard gas (yperit), Lewisit, HN1/2/3, BZ, Saxitoxin... Cấm gần như tuyệt đối: không SX, KD, tồn trữ. Chỉ được NK/SX với số lượng rất nhỏ phục vụ nghiên cứu hoặc y tế; cần GP đặc biệt + báo cáo OPCW"},
+      {k:"Bảng 2 – Kiểm soát CHẶT",v:"Có tiền chất hoặc chất dùng SX vũ khí HC, có một số công dụng dân sự. VD: Amiton, PFIB, BZ, Thiodiglycol... SX/KD cần Giấy phép HC KSĐB nhóm 1. Phải báo cáo OPCW hàng năm"},
+      {k:"Bảng 3 – Giám sát",v:"HC sản xuất số lượng lớn trong CN dân sự nhưng có thể dùng làm tiền chất vũ khí HC. VD: Phosgene, Cyanogen chloride, Hydrogen cyanide, Chloropicrin... SX/KD cần Giấy phép HC KSĐB nhóm 2. Phải báo cáo OPCW khi SX >30 tấn/năm"}
+    ]},
+    {nhom:"Thủ tục XNK & nghĩa vụ báo cáo OPCW – Điều 8-9",icon:"file-check",items:[
+      {k:"Yêu cầu SX/KD HC Bảng (Điều 8)",v:"Cơ sở SX HC Bảng phải: đáp ứng điều kiện Luật HC và NĐ 26/2026; phân loại, ghi nhãn, lập SDS theo GHS; lập Phiếu kiểm soát mua bán HC độc; huấn luyện AT HC định kỳ; san chiết đóng gói đúng quy định; lưu trữ thông tin ≥3 năm; vận chuyển theo quy định hàng nguy hiểm"},
+      {k:"Sản xuất HC DOC >200 tấn/năm",v:"Cơ sở SX HC hữu cơ riêng biệt (DOC) có sản lượng >200 tấn/năm (hoặc DOC-PSF >30 tấn/năm) phải: đăng ký với OPCW qua Cục HC; chịu thanh sát quốc tế hàng năm; báo cáo OPCW theo năm tài chính"},
+      {k:"Chế biến, sử dụng, tồn trữ HC Bảng (Điều 21)",v:"Phải tuân thủ Chương V Luật HC và Điều 8, 9 VBHN02BCT. HC Bảng 1: báo cáo OPCW mọi hoạt động. HC Bảng 2: báo cáo OPCW khi vượt ngưỡng quy định. Chịu thanh sát quốc tế theo lịch của OPCW"},
+      {k:"Cơ quan quốc gia VN thực hiện CWC (Điều 6)",v:"Bộ Công Thương (Cục HC) là cơ quan quốc gia đầu mối thực hiện CWC. Chịu trách nhiệm: thu thập báo cáo từ cơ sở → tổng hợp báo cáo OPCW; phối hợp thanh sát quốc tế; cấp GP theo quy định CWC"}
+    ]}
+  ],
+  ghi_chu:"VBHN chính quy (hợp nhất NĐ 33/2024 + NĐ 26/2026). Dùng cho HC thuộc Công ước CWC.",mau:"error",thu_tu:6,lien_ket:["ND242026","ND262026"]},
+  // ── PHÂN BÓN ──
+  {id:"L312018",ky_hieu:"Luật 31/2018/QH14",ten:"Luật Trồng trọt – Phần quản lý phân bón (Điều 36-46)",co_quan:"Quốc hội",hieu_luc:"01/01/2020",loai:"Luật",cap:"Luật",nhom:["phan_bon"],tinh_huong:["phap_ly","hang_hoa_cam"],dieu_tiet:["Điều 36: Phân bón là hàng hóa kinh doanh CÓ ĐIỀU KIỆN – phải có Quyết định công nhận lưu hành","Điều 44: NK phân bón đã công nhận: không cần GP. NK chưa công nhận: phải có GP NK","Điều 39: Các loại phân bón KHÔNG phải khảo nghiệm (hữu cơ thuần túy, vô cơ đơn N/P/K, phức hợp NPK liên kết HH...)","Điều 46: Phân bón NK phải kiểm tra nhà nước về chất lượng – trừ phân bón NK theo các mục đích đặc biệt","Điều 41: Tổ chức SX phân bón cần GCN đủ điều kiện hiệu lực 5 năm; Điều 42: KD cần GCN đủ điều kiện KD"],
+  chi_tiet:[
+    {nhom:"Phân loại phân bón – Điều 36, Luật Trồng trọt",icon:"layers",items:[
+      {k:"3 nhóm phân bón chính",v:"(1) Phân bón hóa học (vô cơ): SX từ chất vô cơ hoặc hữu cơ tổng hợp qua quá trình hóa học. VD: Ure, DAP, NPK tổng hợp. (2) Phân bón hữu cơ: từ chất hữu cơ tự nhiên qua sinh học/lý học. VD: phân chuồng, phân compost, phân vi sinh. (3) Phân bón sinh học: qua quá trình sinh học hoặc nguồn tự nhiên, có chứa axit humic/fulvic, chất kích thích sinh trưởng, vi sinh vật"},
+      {k:"Phân bón rễ vs phân bón lá",v:"Phân bón rễ: cung cấp dinh dưỡng qua bộ rễ cây. Phân bón lá: cung cấp dinh dưỡng qua thân, lá, hoa, quả. Cả 3 nhóm đều có thể ở dạng phân bón rễ hoặc phân bón lá"},
+      {k:"Nguyên tố dinh dưỡng trong phân bón",v:"Đa lượng: N (đạm), P (lân), K (kali). Trung lượng: Ca, Mg, S, Si. Vi lượng: B, Co, Cu, Fe, Mn, Mo, Zn. Yếu tố hạn chế: các chất có nguy cơ gây hại, ô nhiễm môi trường theo QCKT"}
+    ]},
+    {nhom:"Công nhận phân bón lưu hành – Điều 36-39",icon:"check-circle",items:[
+      {k:"Phân bón CÓ ĐIỀU KIỆN (Điều 36)",v:"Phân bón là hàng hóa kinh doanh có điều kiện. Mọi phân bón phải được cấp Quyết định công nhận lưu hành trước khi NK/SX/KD. Ngoại lệ duy nhất: phân bón hữu cơ tự SX để tự dùng không vì mục đích thương mại"},
+      {k:"Điều kiện công nhận lưu hành (Điều 37)",v:"(1) Đáp ứng chỉ tiêu chất lượng theo QCKTQG về phân bón; (2) Có kết quả khảo nghiệm đạt TCQG (trừ loại không phải khảo nghiệm). Thời hạn Quyết định công nhận: 05 NĂM, được gia hạn"},
+      {k:"Loại KHÔNG phải khảo nghiệm (Điều 39)",v:"(a) Phân hữu cơ bón rễ chỉ là chất hữu cơ tự nhiên; (b) Phân vô cơ đơn bón rễ chỉ N hoặc P hoặc K; (c) Phân vô cơ phức hợp bón rễ chỉ NPK liên kết hóa học; (d) Phân đã được công nhận là tiến bộ kỹ thuật. Tất cả đều phải đáp ứng QCKTQG"}
+    ]},
+    {nhom:"Xuất khẩu & Nhập khẩu phân bón – Điều 43-46",icon:"arrow-right-left",items:[
+      {k:"Xuất khẩu phân bón (Điều 43)",v:"Tự do theo pháp luật thương mại và quản lý ngoại thương hoặc theo yêu cầu nước NK. Không cần điều kiện đặc biệt từ cơ quan quản lý phân bón"},
+      {k:"NK phân bón ĐÃ công nhận lưu hành (Điều 44 khoản 1)",v:"Tổ chức/cá nhân có tên trong Quyết định công nhận lưu hành được NK KHÔNG cần GP NK. Được ủy quyền NK cho tổ chức/cá nhân khác. NK đúng loại, đúng tên phân bón trong Quyết định công nhận"},
+      {k:"NK phân bón CHƯA công nhận – cần GP NK (Điều 44 khoản 2)",v:"Phải có Giấy phép NK trong 7 trường hợp: (a) Khảo nghiệm; (b) Sân thể thao/khu vui chơi; (c) Dự án nước ngoài tại VN; (d) Quà tặng/hàng mẫu; (đ) Hội chợ/triển lãm; (e) Nghiên cứu KH; (g) Làm nguyên liệu SX phân bón khác"},
+      {k:"Kiểm tra nhà nước chất lượng PB NK (Điều 46)",v:"Mọi phân bón NK phải kiểm tra nhà nước về chất lượng. Cơ quan kiểm tra: Cục Trồng trọt và Bảo vệ thực vật (Bộ NN&MT). Hồ sơ kiểm tra lưu 5 năm. MIỄN kiểm tra: phân bón NK để khảo nghiệm (a), quà tặng/hàng mẫu (d), hội chợ/triển lãm (đ), nghiên cứu KH (e), quà biếu ngoại giao (h)"}
+    ]}
+  ],
+  ghi_chu:"Văn bản nền tảng về quản lý phân bón. Tra cứu TRƯỚC khi thực hiện NK phân bón.",mau:"primary",thu_tu:1,lien_ket:["ND84_33","TT072026_PB"]},
+
+  {id:"ND84_33",ky_hieu:"NĐ 84/2019 + NĐ 33/2026",ten:"Quản lý phân bón – Công nhận lưu hành, SX, KD (đọc kết hợp)",co_quan:"Chính phủ",hieu_luc:"21/01/2026 (NĐ 33)",loai:"Nghị định",cap:"Nghị định",nhom:["phan_bon"],tinh_huong:["phap_ly","kiem_tra_ho_so"],dieu_tiet:["Phân loại phân bón: vô cơ (hóa học), hữu cơ, sinh học","Hồ sơ công nhận lưu hành: Đơn + thông tin SP + kết quả khảo nghiệm + CFS (nếu NK)","Thời hạn xử lý: 03 tháng từ ngày nhận đủ hồ sơ; Quyết định công nhận hiệu lực 5 năm","Giấy phép NK phân bón chưa công nhận: 07 ngày làm việc","Giấy CN đủ điều kiện SX phân bón: 17 ngày làm việc (UBND tỉnh cấp, hiệu lực 5 năm)"],
+  chi_tiet:[
+    {nhom:"Hồ sơ công nhận phân bón lưu hành – Điều 5 NĐ84 / Điều 13 TT07",icon:"file-text",items:[
+      {k:"Hồ sơ cấp Quyết định công nhận (4 thành phần)",v:"(a) Đơn đề nghị (Mẫu 30 Phụ lục II TT07); (b) Bản thông tin chung về phân bón có xác nhận nhà SX (loại, tên, dạng, hướng dẫn SD, thời hạn SD, cảnh báo...); (c) Bản chính báo cáo kết quả khảo nghiệm (trừ loại không phải KN); (d) Giấy CFS của nước XK (đối với PB NK loại phải khảo nghiệm theo Đ39 Luật TT)"},
+      {k:"Nộp hồ sơ và thời gian xử lý",v:"Nộp: trực tiếp, bưu chính hoặc qua môi trường mạng. Cơ quan nhận: Cục Trồng trọt và Bảo vệ thực vật. Thời hạn: trong 03 THÁNG kể từ ngày nhận đủ hồ sơ → ban hành Quyết định công nhận. Thời hạn Quyết định: 05 NĂM. Gia hạn: nộp trước 03 tháng khi hết hạn"},
+      {k:"Cấp lại Quyết định công nhận",v:"Các trường hợp cấp lại: (a) Thay đổi thông tin tổ chức; (b) Mất/hư hỏng Quyết định; (c) Thay đổi tên phân bón theo QĐ cơ quan NN hoặc bản án tòa án vi phạm SHTT. Thời gian: 07 ngày làm việc"},
+      {k:"Gia hạn Quyết định công nhận",v:"Hồ sơ: Đơn gia hạn (Mẫu 30) + Báo cáo tình hình SX/XK/NK/sử dụng PB (Mẫu 31). Thời gian: 07 ngày làm việc. Phải gia hạn trước 03 tháng khi hết hạn hiệu lực"}
+    ]},
+    {nhom:"Hồ sơ SX & KD phân bón – Điều 14-17 NĐ84 / Điều 17 NĐ33",icon:"factory",items:[
+      {k:"GCN đủ điều kiện SX phân bón",v:"Điều kiện: (a) Địa điểm, nhà xưởng phù hợp; (b) Dây chuyền, thiết bị phù hợp từng loại PB; (c) Phòng thử nghiệm hoặc HĐ với tổ chức thử nghiệm được chỉ định; (d) Hệ thống quản lý CL (ISO); (e) Khu nguyên liệu và thành phẩm riêng; (f) GĐ SX có bằng ĐH chuyên ngành về nông hóa/hóa học/sinh học/trồng trọt"},
+      {k:"Thủ tục cấp GCN SX phân bón (Điều 17 NĐ33)",v:"Nộp tại UBND cấp tỉnh nơi đặt trụ sở chính. Nếu cơ sở SX ở nhiều tỉnh: tỉnh trụ sở phối hợp với tỉnh có cơ sở SX trong 10 ngày. Thời hạn: 17 ngày làm việc từ nhận đủ hồ sơ. GCN hiệu lực 5 NĂM"},
+      {k:"KD phân bón – Điều 42 Luật TT",v:"Cần GCN đủ điều kiện KD phân bón (UBND tỉnh cấp). Không cần GCN KD nếu là tổ chức SX đang bán PB do mình SX. Điều kiện: địa điểm hợp pháp; hồ sơ truy xuất nguồn gốc; người trực tiếp KD được tập huấn chuyên môn phân bón"}
+    ]},
+    {nhom:"Phân bón giả & không đảm bảo chất lượng – Điều 2 NĐ84",icon:"alert-triangle",items:[
+      {k:"Phân bón KHÔNG đảm bảo chất lượng",v:"Chỉ tiêu CL hoặc yếu tố hạn chế không phù hợp Quyết định công nhận lưu hành hoặc QCKTQG. Hàng hóa không đủ điều kiện lưu thông, phải thu hồi và xử lý"},
+      {k:"Phân bón GIẢ về chất lượng",v:"Một hoặc nhiều chỉ tiêu CL CHÍNH chỉ đạt ≤70% mức đăng ký trong Quyết định công nhận. Đây là vi phạm nghiêm trọng, bị xử phạt nặng và hủy bỏ Quyết định công nhận"}
+    ]}
+  ],
+  ghi_chu:"NĐ 33/2026 sửa đổi NĐ 84/2019. Đọc kết hợp cả hai. Cơ quan cấp phép: Cục Trồng trọt và Bảo vệ thực vật.",mau:"warning",thu_tu:2,lien_ket:["L312018","TT072026_PB"]},
+
+  {id:"TT072026_PB",ky_hieu:"TT 07/2026/TT-BNNMT (phần phân bón)",ten:"Thủ tục cấp phép phân bón – Công nhận lưu hành & Nhập khẩu",co_quan:"Bộ Nông nghiệp & Môi trường",hieu_luc:"2026",loai:"Thông tư",cap:"Thông tư",nhom:["phan_bon"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Điều 12: Phân loại 3 nhóm PB (vô cơ, hữu cơ, sinh học) và dạng bón rễ/bón lá","Điều 13: Cấp Quyết định công nhận lưu hành – 03 tháng, nộp tại Cục TTBVTV","Điều 17: Cấp Giấy phép NK phân bón chưa công nhận – 07 ngày làm việc, UBND tỉnh cấp","Điều 18: Giấy CN lấy mẫu phân bón – tập huấn 5 ngày; cơ quan: Cục TTBVTV","Hồ sơ NK phân bón chưa công nhận: Đơn + Tờ khai kỹ thuật + CFS + Văn bản nhà SX"],
+  chi_tiet:[
+    {nhom:"Thủ tục NK phân bón chưa công nhận lưu hành – Điều 17 TT07",icon:"file-check",items:[
+      {k:"Hồ sơ Giấy phép NK phân bón (Điều 17)",v:"(a) Đơn đăng ký NK PB (Mẫu 33 Phụ lục II); (b) Tờ khai kỹ thuật (Mẫu 34 Phụ lục II); (c) Văn bản nhà SX về: chỉ tiêu CL, hướng dẫn SD, cảnh báo an toàn, yếu tố hạn chế; (d) CFS của nước XK (cho NK khảo nghiệm, dùng cho sân thể thao, dự án NN, quà tặng, hội chợ, NC KH, nguyên liệu SX); (đ) Giấy mời/xác nhận hội chợ triển lãm (nếu NK theo đ k2 Đ44 Luật TT); (e) Đề cương nghiên cứu (nếu NK theo mục NC KH)"},
+      {k:"Trình tự & thẩm quyền cấp GP NK",v:"Nộp: Cơ quan được Chủ tịch UBND tỉnh giao tiếp nhận hồ sơ (trực tiếp/bưu chính/mạng). Trả lời đầy đủ hồ sơ: ngay (trực tiếp) hoặc 02 ngày LV (bưu chính/mạng). Thời hạn cấp: 07 ngày làm việc từ nhận đủ hồ sơ → Chủ tịch UBND tỉnh cấp Giấy phép NK"},
+      {k:"Nội dung Giấy phép NK phân bón",v:"Ghi rõ: tên PB; loại PB (vô cơ/hữu cơ/sinh học); số lượng được NK; mục đích NK; thời hạn nhập khẩu. Phân bón chỉ được dùng ĐÚNG MỤC ĐÍCH ghi trong Giấy phép. Không được bán ra thị trường nếu GP cấp cho mục đích khảo nghiệm hoặc nghiên cứu"}
+    ]},
+    {nhom:"Thủ tục công nhận phân bón lưu hành – Điều 13-16 TT07",icon:"stamp",items:[
+      {k:"Cấp Quyết định công nhận (Điều 13)",v:"Nộp 01 bộ hồ sơ (Mẫu 30+) trực tiếp tại Cục TTBVTV hoặc qua mạng/bưu chính. Thời hạn: 03 THÁNG từ nhận đủ hồ sơ. Thời hạn Quyết định: 05 năm"},
+      {k:"Cấp lại Quyết định (Điều 14)",v:"Thời hạn: 07 ngày LV. Trường hợp chuyển nhượng PB: nộp kèm Hợp đồng/thỏa thuận chuyển nhượng. Trường hợp thay đổi tên: nộp VB cơ quan SHTT hoặc bản án tòa án"},
+      {k:"Gia hạn Quyết định (Điều 15)",v:"Hồ sơ: Đơn + Báo cáo tình hình SX/XK/NK/sử dụng PB (Mẫu 31). Thời hạn: 07 ngày LV. Gia hạn thêm 05 năm. Phải nộp trước khi hết hạn 03 tháng"},
+      {k:"Hủy bỏ Quyết định (Điều 16)",v:"2 trường hợp: (a) Bằng chứng KH mới về nguy cơ gây hại sức khỏe/MT → Cục TTBVTV thẩm định trong 05 ngày LV; (b) Phát hiện hồ sơ giả hoặc thông tin sai → Cục TTBVTV kiểm tra, rà soát trong 05 ngày LV. Đăng tải QĐ hủy trên website Cục trong 02 ngày LV"}
+    ]},
+    {nhom:"Giấy CN lấy mẫu phân bón – Điều 18 TT07",icon:"clipboard",items:[
+      {k:"Nội dung tập huấn & thời gian",v:"3 nội dung: Quy định pháp luật về PB; Phương pháp lấy mẫu theo TCQG; Thực hành lấy mẫu. Thời gian tập huấn: 05 NGÀY. Cơ quan cấp GCN: Cục Trồng trọt và Bảo vệ thực vật"},
+      {k:"Tại sao cần GCN lấy mẫu?",v:"Theo Điều 45 Luật Trồng trọt: việc lấy mẫu PB để thử nghiệm CL phục vụ quản lý nhà nước phải do người có GCN lấy mẫu PB thực hiện. Đây là yêu cầu bắt buộc khi thanh tra, kiểm tra chất lượng phân bón NK"}
+    ]}
+  ],
+  ghi_chu:"Thông tư mới nhất 2026 của Bộ NN&MT hướng dẫn thủ tục phân bón. Tra mẫu biểu tại Phụ lục II TT07.",mau:"secondary",thu_tu:3,lien_ket:["L312018","ND84_33"]},
+
+  {id:"NQ172026",ky_hieu:"NQ 17/2026/NQ-CP",ten:"Cắt giảm & đơn giản hóa thủ tục hành chính lĩnh vực phân bón – BNN&MT",co_quan:"Chính phủ",hieu_luc:"29/04/2026",loai:"Nghị quyết",cap:"Nghị quyết",nhom:["phan_bon"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Cắt giảm, phân cấp thủ tục hành chính lĩnh vực nông nghiệp và môi trường","Phân cấp cho UBND tỉnh nhiều thủ tục HQ trước đây thuộc Bộ NN&MT","Đơn giản hóa hồ sơ, rút ngắn thời gian giải quyết thủ tục liên quan phân bón","Cắt giảm điều kiện kinh doanh không cần thiết trong lĩnh vực trồng trọt","Ứng dụng dịch vụ công trực tuyến mức độ cao cho thủ tục phân bón"],
+  ghi_chu:"NQ cải cách thủ tục quan trọng 2026. Kiểm tra NQ này khi gặp thủ tục phân bón để biết cơ quan có thẩm quyền cấp phép hiện tại.",mau:"secondary",thu_tu:4,lien_ket:["ND84_33","TT072026_PB"]},
+
+  {id:"ND262023_PB",ky_hieu:"NĐ 26/2023/NĐ-CP (Chương 31 – Phân bón)",ten:"Biểu thuế NK ưu đãi (MFN) – Phân bón Chương 31",co_quan:"Chính phủ",hieu_luc:"01/04/2023",loai:"Nghị định",cap:"Nghị định",nhom:["phan_bon"],tinh_huong:["phap_ly"],dieu_tiet:["Chương 31 HS: Phân bón (3101–3105) – thuế suất MFN hầu hết 0% hoặc ưu đãi thấp","3101: Phân bón động vật, thực vật đã hoặc chưa pha trộn – thuế 0%","3102: Phân đạm vô cơ/hóa học (Ure, AN, sulfat amoni...) – thuế 0%","3103: Phân lân (superphosphate, DAP...) – thuế 0%","3104: Phân kali (KCl, K2SO4...) – thuế 0%","3105: Phân NPK, phân hỗn hợp và phân bón khác – thuế 0-3%"],
+  chi_tiet:[
+    {nhom:"Thuế suất MFN phân bón Chương 31 (NĐ 26/2023)",icon:"percent",items:[
+      {k:"3101 – Phân hữu cơ động/thực vật",v:"Phân hữu cơ tự nhiên: phân chuồng, phân ủ, phân compost, guano... Thuế suất NK MFN: 0%"},
+      {k:"3102 – Phân đạm vô cơ/hóa học",v:"Ure (3102.10): 0% | Amoni nitrat (AN): 0% | Amoni sulfat: 0% | Amoni clorua: 0% | Natri nitrat: 0% | Canxi nitrat: 0% | Phân đạm hỗn hợp khác: 0%"},
+      {k:"3103 – Phân lân vô cơ/hóa học",v:"Superphosphate đơn: 0% | Superphosphate kép (TSP): 0% | DAP (Diamoni phosphate): 0% | MAP: 0% | Phân lân khác: 0%"},
+      {k:"3104 – Phân kali vô cơ/hóa học",v:"Kali clorua (KCl – MOP): 0% | Kali sulfat (SOP): 0% | Phân kali khác: 0%"},
+      {k:"3105 – Phân hỗn hợp, NPK và phân bón khác",v:"NPK tổng hợp: 0% | NPK phức hợp: 0-3% | Phân bón vi lượng: 0% | Phân bón hỗn hợp khác: 0-3%"},
+      {k:"Lưu ý quan trọng",v:"Đây là thuế suất MFN (thuế ưu đãi cơ bản). Nhập khẩu phân bón từ các nước có FTA với VN (ASEAN, Hàn Quốc, Nhật Bản, EU, Trung Quốc ACFTA...) có thể được hưởng thuế suất ưu đãi đặc biệt THẤP HƠN hoặc 0% theo biểu thuế FTA tương ứng"}
+    ]}
+  ],
+  ghi_chu:"Chương 31 HS – hầu hết phân bón NK thuế MFN 0%. Tra thêm biểu thuế FTA để hưởng ưu đãi tốt hơn.",mau:"secondary",thu_tu:5,lien_ket:["L312018"]},
+
+  // ── MÁY MÓC THIẾT BỊ ──
+  {id:"L052017",ky_hieu:"Luật 05/2017/QH14",ten:"Luật Quản lý Ngoại thương – Nền tảng pháp lý XNK",co_quan:"Quốc hội",hieu_luc:"01/01/2018",loai:"Luật",cap:"Luật",nhom:["may_moc","tat_ca"],tinh_huong:["hang_hoa_cam","phap_ly"],dieu_tiet:["Điều 5: Quyền tự do KD XK/NK – thương nhân VN được tự do XNK trừ danh mục cấm","Điều 8-10: CẤM XK/NK – Danh mục do Chính phủ ban hành; TT cho phép NK trong trường hợp đặc biệt","Điều 15-22: HẠN CHẾ XK/NK – hạn ngạch, hạn ngạch thuế quan","Điều 29-31: GIẤY PHÉP & ĐIỀU KIỆN XK/NK – xin GP tại Bộ quản lý chuyên ngành","Điều 65-66: Kiểm tra chuyên ngành – danh mục & cơ quan kiểm tra; thực hiện đồng thời TTHQ"],
+  chi_tiet:[
+    {nhom:"Quyền tự do kinh doanh XNK – Điều 5",icon:"unlock",items:[
+      {k:"Quyền tự do XNK (Điều 5)",v:"Thương nhân VN được tự do XK/NK không phân biệt ngành nghề đăng ký, trừ hàng CẤM và hàng TẠM NGỪNG. Chi nhánh TN nước ngoài tại VN được XNK theo phạm vi ghi trong giấy phép"},
+      {k:"Hành vi bị nghiêm cấm (Điều 7)",v:"Cấm: XK/NK hàng giả, hàng vi phạm SHTT; kinh doanh TNTX hàng cấm; gian lận xuất xứ; gian lận tên gọi tạo nhầm lẫn với hàng hóa đã bảo hộ"}
+    ]},
+    {nhom:"Các biện pháp quản lý XNK – Điều 8-31",icon:"layers",items:[
+      {k:"Cấm XK/NK (Điều 8-10)",v:"Hàng cấm theo Danh mục Phụ lục I NĐ 69/2018. Trường hợp đặc biệt: Thủ tướng cho phép XK/NK hàng cấm vì mục đích đặc dụng, bảo hành, phân tích, kiểm nghiệm, nghiên cứu KH"},
+      {k:"Tạm ngừng XK/NK (Điều 11-13)",v:"Áp dụng khi: hàng gây nguy hại AT/MT/sức khỏe; khủng hoảng cán cân thanh toán; thiếu hụt trong nước. Bộ CT ra QĐ, thời hạn tối đa 12 tháng"},
+      {k:"Hạn ngạch & GP (Điều 17-31)",v:"Hạn ngạch XK/NK: bảo vệ tài nguyên, an ninh quốc gia, theo cam kết quốc tế. GP & điều kiện XK/NK (Phụ lục III NĐ 69/2018): xin GP tại Bộ quản lý chuyên ngành trước khi XK/NK"}
+    ]},
+    {nhom:"Kiểm tra chuyên ngành & CFS – Điều 35-38, 65-66",icon:"shield-check",items:[
+      {k:"Kiểm tra xuất xứ hàng NK (Điều 35)",v:"HQ kiểm tra XK theo Bộ TC. Khi nghi ngờ → xác minh tại nước SX. Trong thời gian xác minh: hàng được TQ nhưng chưa hưởng thuế ưu đãi đặc biệt"},
+      {k:"CFS hàng NK (Điều 36-38)",v:"Một số hàng NK phải có CFS (Phụ lục V NĐ 69/2018). CFS phải có: tên cơ quan cấp, tên SP, tên nhà SX, ghi rõ được phép bán tự do tại nước SX/cấp"},
+      {k:"Kiểm tra chuyên ngành (Điều 65-66)",v:"Hàng XK/NK theo danh mục các Bộ ban hành phải KTCN. Thực hiện ĐỒNG THỜI với TTHQ – không chờ TQ rồi mới kiểm. Kết quả KTCN gửi qua Cổng 1 cửa QG, HQ tiếp nhận điện tử"}
+    ]}
+  ],
+  ghi_chu:"Văn bản pháp lý nền tảng về XNK. Tra cứu khi gặp vướng mắc về cơ chế quản lý XK/NK.",mau:"primary",thu_tu:1,lien_ket:["QD182019","TT232015"]},
+
+  {id:"L842015",ky_hieu:"Luật 84/2015/QH13",ten:"Luật An toàn VSLĐ – Kiểm định thiết bị yêu cầu nghiêm ngặt về AT",co_quan:"Quốc hội",hieu_luc:"01/07/2016",loai:"Luật",cap:"Luật",nhom:["may_moc"],tinh_huong:["phap_ly","kiem_tra_ho_so"],dieu_tiet:["Điều 28: Danh mục máy, thiết bị vật tư chất có yêu cầu nghiêm ngặt về ATVSLĐ (Danh mục nhóm 2)","Điều 30: Tổ chức/cá nhân SX, NK, sử dụng thiết bị nhóm 2 phải kiểm định trước khi đưa vào sử dụng","Điều 31: Chỉ tổ chức kiểm định được Bộ LĐTBXH chỉ định mới được cấp Chứng thư kiểm định","Điều 33: Bộ LĐTBXH ban hành Danh mục; các Bộ khác quản lý theo ngành lĩnh vực","Thiết bị NK thuộc Danh mục nhóm 2 phải kiểm tra kỹ thuật AT trước khi thông quan"],
+  chi_tiet:[
+    {nhom:"Máy, thiết bị có yêu cầu nghiêm ngặt về AT – Điều 28-31",icon:"alert-triangle",items:[
+      {k:"Danh mục thiết bị nhóm 2 (Điều 28)",v:"Bộ LĐTBXH ban hành. Thiết bị điển hình: nồi hơi, bình chịu áp lực, thang máy, cần trục, thiết bị nâng hạ, máy phát điện, bể chứa hóa chất nguy hiểm... → Tra cụ thể tại TT 36/2019/TT-BLĐTBXH"},
+      {k:"Kiểm định trước khi sử dụng (Điều 30)",v:"Tổ chức/cá nhân SX, NK, sử dụng thiết bị thuộc Danh mục phải: (1) Kiểm định theo QCKT trước khi đưa vào sử dụng; (2) Đăng ký với cơ quan có thẩm quyền; (3) Kiểm định lại định kỳ. Thiết bị NK đã qua sử dụng: phải kiểm định TRƯỚC KHI thông quan hoặc trước khi đưa vào sử dụng"},
+      {k:"Tổ chức kiểm định (Điều 31)",v:"Chỉ tổ chức được Bộ LĐTBXH chỉ định mới được cấp Chứng thư kiểm định. Không có Chứng thư → không được đưa vào sử dụng. HQ yêu cầu chứng thư kiểm định khi làm TTHQ đối với thiết bị thuộc Danh mục nhóm 2"}
+    ]}
+  ],
+  ghi_chu:"Thiết bị nhóm 2 phải kiểm định AN TOÀN trước khi NK và trước khi sử dụng. Tra danh mục: TT 36/2019/TT-BLĐTBXH.",mau:"warning",thu_tu:2,lien_ket:["QD182019","TT232015"]},
+
+  {id:"QD182019",ky_hieu:"QĐ 18/2019/QĐ-TTg",ten:"Nhập khẩu máy móc, thiết bị, dây chuyền CN đã qua sử dụng",co_quan:"Thủ tướng Chính phủ",hieu_luc:"15/07/2019",loai:"Quyết định",cap:"Quyết định",nhom:["may_moc"],tinh_huong:["kiem_tra_ho_so","phap_ly","hang_hoa_cam"],dieu_tiet:["Điều 6: Máy móc TB đã qua sử dụng: tuổi ≤10 năm + tiêu chuẩn G7/Hàn Quốc/QCVN/TCVN","Điều 5: Dây chuyền CN: hiệu suất còn lại ≥85%; tiêu hao NVL ≤15%; đang dùng tại ≥3 cơ sở OECD/G7","Điều 7-8: Hồ sơ NK = Hồ sơ HQ thông thường + GCNĐKDN + Chứng thư giám định","Điều 9: Tuổi >10 năm – đặc biệt: xin Bộ KHCN chấp thuận (tổng khoảng 15 ngày LV)","Điều 10-11: Chứng thư giám định: 8 nội dung bắt buộc; hiệu lực 6 tháng nếu cấp trước khi hàng về cảng"],
+  chi_tiet:[
+    {nhom:"Tiêu chí NK máy móc đã qua sử dụng – Điều 5-6",icon:"check-square",items:[
+      {k:"Tiêu chí máy móc thiết bị (Điều 6)",v:"(1) TUỔI THIẾT BỊ ≤ 10 NĂM (từ năm SX đến năm về cảng VN). Một số lĩnh vực có tuổi khác tại Phụ lục I QĐ18. (2) SẢN XUẤT THEO TIÊU CHUẨN: ưu tiên QCVN; nếu không có → TCVN hoặc tiêu chuẩn nước G7/Hàn Quốc về AT, tiết kiệm NL và BVMT"},
+      {k:"Tiêu chí dây chuyền CN (Điều 5)",v:"(1) Tiêu chuẩn QCVN/G7/HQ; (2) Công suất/hiệu suất còn lại ≥ 85%; (3) Tiêu hao NVL-NL ≤ 15% so thiết kế; (4) Công nghệ không thuộc DM cấm/hạn chế chuyển giao; (5) Đang được sử dụng tại ≥3 cơ sở SX thuộc OECD hoặc G7"},
+      {k:"Điều kiện KHÔNG được phép NK",v:"(a) Nước XK đã công bố loại bỏ do lạc hậu/chất lượng kém/ô nhiễm MT; (b) Không đáp ứng yêu cầu AT, tiết kiệm NL, BVMT; (c) Không phục vụ trực tiếp hoạt động SX của DN tại VN"}
+    ]},
+    {nhom:"Hồ sơ & thủ tục NK – Điều 7-8",icon:"file-text",items:[
+      {k:"Hồ sơ NK dây chuyền CN (Điều 7)",v:"Ngoài hồ sơ HQ thông thường, bổ sung: (a) Bản sao GCNĐKDN đóng dấu DN + VB ủy thác (nếu có); (b) CHỨNG THƯ GIÁM ĐỊNH kết luận ĐẠT. HQ chỉ TQ khi đủ hồ sơ và chứng thư kết luận đạt"},
+      {k:"Hồ sơ NK máy móc thiết bị (Điều 8)",v:"Ngoài hồ sơ HQ, bổ sung: (a) GCNĐKDN + VB ủy thác; (b) Giấy XÁC NHẬN NHÀ SX về năm SX và tiêu chuẩn (nếu SX tại G7/HQ); HOẶC (c) CHỨNG THƯ GIÁM ĐỊNH (nếu SX tại nước không thuộc G7/HQ)"},
+      {k:"Đưa hàng về bảo quản (Điều 8.3)",v:"Nếu chưa có Giấy XN nhà SX tại thời điểm NK: đưa hàng về BQ sau khi đăng ký GĐ. Trong 30 NGÀY phải nộp chứng thư GĐ cho HQ. Không đạt → xử phạt VPHC lĩnh vực HQ"}
+    ]},
+    {nhom:"Trường hợp đặc biệt (tuổi >10 năm) – Điều 9",icon:"alert-circle",items:[
+      {k:"Điều kiện",v:"DN đang SX tại VN, cần NK máy móc tuổi >10 năm để DUY TRÌ SX (không thể thay bằng thiết bị ≤10 năm)"},
+      {k:"Trình tự xin Bộ KHCN",v:"Hồ sơ: VB đề nghị (Phụ lục II QĐ18) + GCNĐKDN + Chứng thư GĐ. Bộ KHCN: 2 ngày LV lấy ý kiến các Bộ → 10 ngày LV các Bộ trả lời → 3 ngày LV Bộ KHCN ra quyết định. Sau khi có VB chấp thuận: nộp HQ kèm VB chấp thuận để TQ"},
+      {k:"Chứng thư giám định (Điều 10-11)",v:"8 nội dung bắt buộc: tên/năm SX/nhãn hiệu/model/nhà SX; thời gian và địa điểm GĐ; tình trạng khi GĐ; phương pháp và QCVN/G7 áp dụng; đánh giá từng tiêu chí; KẾT LUẬN ĐẠT/KHÔNG ĐẠT. Hiệu lực: 6 THÁNG nếu cấp trước khi hàng về cảng"}
+    ]}
+  ],
+  ghi_chu:"Văn bản quan trọng nhất về NK máy móc TB đã qua sử dụng. Tuổi ≤10 năm + tiêu chuẩn G7/HQ là điều kiện cốt lõi.",mau:"primary",thu_tu:3,lien_ket:["TT232015","L842015","L052017"]},
+
+  {id:"TT232015",ky_hieu:"TT 23/2015/TT-BKHCN",ten:"NK máy móc thiết bị đã qua sử dụng – Quy định gốc (đọc kết hợp QĐ 18)",co_quan:"Bộ Khoa học & Công nghệ",hieu_luc:"01/07/2016",loai:"Thông tư",cap:"Thông tư",nhom:["may_moc"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Điều 6.2: Dự án đầu tư có danh mục thiết bị đã qua sử dụng được phê duyệt → KHÔNG cần chứng thư giám định","Điều 9: Linh kiện, phụ tùng, bộ phận đã qua sử dụng: được NK khi cần sửa chữa thiết bị đang vận hành","Điều 10.3: Chứng thư giám định hiệu lực 6 THÁNG (cấp trước khi hàng về cảng)","Điều 8.2: Đưa hàng về bảo quản: 30 ngày LV để bổ sung chứng thư giám định","Điều 12: Thiết bị NK thương mại (để bán lại): chỉ được bán sau khi hoàn thành TTHQ"],
+  chi_tiet:[
+    {nhom:"Điểm đặc biệt TT23 bổ sung cho QĐ 18",icon:"plus-circle",items:[
+      {k:"Dự án đầu tư miễn chứng thư GĐ (Điều 6.2)",v:"Thiết bị đã qua sử dụng thuộc dự án đầu tư (phải quyết định chủ trương hoặc cấp GCNĐKĐT) NẾU danh mục thiết bị có trong hồ sơ dự án đã được cơ quan thẩm quyền phê duyệt → KHÔNG cần chứng thư GĐ riêng. Hồ sơ chỉ cần: bản sao QĐ chủ trương + danh mục thiết bị"},
+      {k:"NK linh kiện, phụ tùng đã qua sử dụng (Điều 9)",v:"Được NK khi DN có thiết bị đang vận hành và cần thay thế/sửa chữa. Hồ sơ: VB thuyết minh nhu cầu NK linh kiện để sửa chữa + VB ủy quyền (nếu NK theo ủy thác) + tài liệu kỹ thuật linh kiện (nếu có). Không cần chứng thư GĐ"},
+      {k:"NK thiết bị vì mục đích thương mại (Điều 12)",v:"DN NK để BÁN LẠI (không tự dùng): chỉ được bán sau khi hoàn thành TTHQ. Người mua cuối chịu trách nhiệm AT, tiết kiệm NL, BVMT khi sử dụng. Cơ quan NN có thể kiểm tra sau khi TQ trong quá trình lắp ráp và vận hành"},
+      {k:"Hiệu lực chứng thư GĐ (Điều 10.3)",v:"Cấp TRƯỚC khi hàng về cảng: hiệu lực 6 THÁNG từ ngày cấp đến ngày hàng về cảng. Cấp sau khi hàng về: không giới hạn hiệu lực. Tổ chức GĐ phải đăng ký thông tin với Bộ KHCN để được công bố danh sách"}
+    ]}
+  ],
+  ghi_chu:"TT23 phần lớn bị thay bởi QĐ 18/2019. Điểm còn giá trị: dự án đầu tư miễn GĐ; linh kiện phụ tùng; NK thương mại.",mau:"secondary",thu_tu:4,lien_ket:["QD182019","L842015"]},
+
+  {id:"TT302025",ky_hieu:"TT 30/2025/TT-BKHCN",ten:"Tiêu chí máy móc TB đã qua sử dụng – Dự án chip bán dẫn & CN số",co_quan:"Bộ Khoa học & Công nghệ",hieu_luc:"01/01/2026",loai:"Thông tư",cap:"Thông tư",nhom:["may_moc"],tinh_huong:["phap_ly","kiem_tra_ho_so"],dieu_tiet:["Điều 5: Tuổi thiết bị ≤ 20 NĂM (gấp đôi QĐ 18) – áp dụng riêng cho dự án chip bán dẫn và CN số","Điều 4: Dây chuyền CN: hiệu suất ≥85%, tiêu hao NVL ≤15%, không thuộc DM lạc hậu","Không cần chứng thư GĐ – thay bằng CAM KẾT BẰNG VĂN BẢN của DN nhập khẩu","Chỉ áp dụng cho: dự án SX/đóng gói/kiểm thử chip bán dẫn và đào tạo NC&PT CN số","Vi phạm cam kết → buộc TÁI XUẤT thiết bị (không được giữ lại)"],
+  chi_tiet:[
+    {nhom:"Tiêu chí đặc biệt cho chip bán dẫn & CN số – Điều 4-5",icon:"cpu",items:[
+      {k:"Tuổi thiết bị ≤ 20 NĂM (Điều 5.4)",v:"QUAN TRỌNG: Thiết bị cho dự án chip bán dẫn và đào tạo CN số được NK khi tuổi ≤ 20 NĂM (QĐ 18 chỉ ≤10 năm). Lý do: thiết bị bán dẫn chu kỳ CN dài, chi phí lớn, không thể thay thế bằng thiết bị <10 năm tuổi"},
+      {k:"Tiêu chí dây chuyền CN (Điều 4)",v:"(1) Không trong DM lạc hậu do nước XK công bố; (2) Không thuộc DM CN cấm/hạn chế chuyển giao; (3) Tiêu chuẩn QCVN hoặc G7/HQ; (4) Hiệu suất còn lại ≥ 85%; (5) Tiêu hao NVL ≤ 15% so thiết kế"},
+      {k:"Tiêu chí máy móc thiết bị (Điều 5)",v:"(1) Không trong DM thiết bị lạc hậu; (2) Không thuộc DM CN cấm/hạn chế chuyển giao; (3) Tiêu chuẩn QCVN/G7/HQ; (4) Tuổi ≤ 20 NĂM"}
+    ]},
+    {nhom:"Thủ tục NK theo TT 30 – Điều 6",icon:"file-check",items:[
+      {k:"Cam kết thay chứng thư GĐ (Điều 6)",v:"KHÔNG cần chứng thư GĐ từ tổ chức GĐ được chỉ định. Thay bằng: (a) CAM KẾT BẰNG VĂN BẢN thiết bị đáp ứng tiêu chí Điều 4 và 5; (b) Cam kết sử dụng ĐÚNG MỤC ĐÍCH dự án; (c) Cung cấp đủ tài liệu cho HQ"},
+      {k:"Trách nhiệm DN & hậu quả vi phạm",v:"Chịu trách nhiệm pháp lý về tính chính xác của cam kết. VI PHẠM cam kết → buộc TÁI XUẤT thiết bị (không được giữ lại). Cơ quan HQ kiểm tra cam kết và tài liệu khi làm TTHQ"},
+      {k:"Phạm vi áp dụng hẹp",v:"CHỈ áp dụng cho: (1) Dự án SX/đóng gói/kiểm thử chip bán dẫn; (2) Đào tạo và NC&PT sản phẩm/dịch vụ CN số. Thiết bị PHẢI phục vụ TRỰC TIẾP dự án. NK khác vẫn áp dụng QĐ 18/2019"}
+    ]}
+  ],
+  ghi_chu:"Áp dụng HẸP cho chip bán dẫn và CN số. Ưu đãi: tuổi ≤20 năm, cam kết thay chứng thư giám định.",mau:"secondary",thu_tu:5,lien_ket:["QD182019","TT232015"]},
+
+  {id:"TT362019",ky_hieu:"TT 36/2019/TT-BLĐTBXH",ten:"Danh mục máy thiết bị bắt buộc kiểm định ATLĐ (Nhóm 2)",co_quan:"Bộ Lao động – TB&XH",hieu_luc:"01/03/2020",loai:"Thông tư",cap:"Thông tư",nhom:["may_moc"],tinh_huong:["phap_ly","kiem_tra_ho_so"],dieu_tiet:["Mục I: 45 loại máy thiết bị dân sự phải kiểm định ATLĐ trước khi sử dụng","Thiết bị áp lực: nồi hơi, bình chịu áp lực, đường ống dẫn hơi, hệ thống lạnh, chai chứa khí","Thiết bị nâng: cần trục, cầu trục, thang máy, thang cuốn, xe nâng ≥1000kg, vận thăng","Thiết bị điện phòng nổ: biến áp, động cơ, khởi động từ, aptomat, cáp điện phòng nổ","Mục II: thiết bị đặc thù quân sự | Mục III: thiết bị đặc thù ngành công an (PCCC, súng, thiết bị soi chiếu)"],
+  chi_tiet:[
+    {nhom:"Danh mục Mục I – 45 loại máy dân sự phải kiểm định ATLĐ",icon:"list",items:[
+      {k:"Nhóm thiết bị áp lực (STT 1-9)",v:"1. Nồi hơi (áp suất >0,7 bar, nồi nước nóng >115°C); 2. Nồi gia nhiệt dầu; 3. Đường ống dẫn hơi/nước nóng cấp I-IV ≥51mm-76mm; 4. Bình chịu áp lực >0,7 bar; 5. Bồn/bể/xi téc chứa khí hóa lỏng/LPG/CNG; 6. Chai chứa khí nén >0,7 bar; 7. Hệ thống cung cấp/nạp khí nén/hóa lỏng; 8. Đường ống dẫn khí đốt cố định, khí y tế, khí nén; 9. Hệ thống lạnh dùng môi chất A3/B2L/B2/B3 hoặc A2 ≥1,5kg"},
+      {k:"Nhóm thiết bị nâng hạ (STT 10-26)",v:"10. Cần trục; 11. Cầu trục; 12. Cổng trục/bán cổng trục; 13. Trục cáp chở hàng/người/tải giếng; 14. Pa lăng điện, pa lăng tay ≥1.000kg; 15. Xe tời điện trên ray; 16. Tời điện nâng tải/kéo nghiêng, bàn nâng, sàn nâng, tời nâng người; 17. Tời tay ≥1.000kg; 18. Xe nâng hàng động cơ ≥1.000kg; 19. Xe nâng người tự hành >2m; 20. Máy vận thăng nâng hàng/người; 21. Thang máy; 22. Thang cuốn/băng tải người"},
+      {k:"Thiết bị vui chơi, thi công, đặc thù (STT 23-45)",v:"23. Sàn biểu diễn di động; 24. Thiết bị trò chơi tàu lượn/đu quay/máng trượt >2m; 25. Cáp treo chở người; 26. Tời giếng hầm lò ≥1.000kg; 28-29. Động cơ đốt trong >0,6m³ cácte; 29-35. Thiết bị điện phòng nổ (biến áp, động cơ, khởi động từ, aptomat, máy cắt, cáp, đèn, máy phát phòng nổ); 36. Máy nổ mìn điện; 38. Máy khoan/ép cọc; 39. Bơm bê tông; 40. Giàn giáo chịu lực; 41. Sàn treo nâng người; 42-43. Đài phát thanh/truyền hình ≥150W"},
+      {k:"Hàm ý khi NK thiết bị thuộc Danh mục",v:"Thiết bị thuộc TT36 khi NK → PHẢI KIỂM ĐỊNH kỹ thuật AT trước khi thông quan hoặc trước khi đưa vào sử dụng (Điều 30 Luật 84/2015). Cơ quan HQ yêu cầu Chứng thư kiểm định. Tổ chức kiểm định phải có GCN đủ điều kiện theo NĐ 44/2016 + NĐ 140/2018"}
+    ]}
+  ],
+  ghi_chu:"Đây là Danh mục nhóm 2 mà Luật ATVSLĐ và QĐ 18/2019 đề cập. Tra cứu khi NK thiết bị để xác định có cần kiểm định ATLĐ không.",mau:"error",thu_tu:6,lien_ket:["L842015","ND44_140","QD182019"]},
+
+  {id:"ND44_140",ky_hieu:"NĐ 44/2016 + NĐ 140/2018",ten:"Kiểm định kỹ thuật ATLĐ – Điều kiện tổ chức & kiểm định viên",co_quan:"Chính phủ",hieu_luc:"08/10/2018 (NĐ 140)",loai:"Nghị định",cap:"Nghị định",nhom:["may_moc"],tinh_huong:["phap_ly","kiem_tra_ho_so"],dieu_tiet:["Điều 4 (sửa bởi NĐ140): Điều kiện tổ chức kiểm định: ≥2 kiểm định viên/đối tượng + thiết bị phục vụ kiểm định","Điều 7: Thời hạn GCN đủ điều kiện hoạt động kiểm định: 5 năm, được gia hạn","Điều 5 khoản 5: Thời hạn thẩm định cấp GCN: 30 ngày làm việc","Điều 9: Tiêu chuẩn kiểm định viên: ĐH kỹ thuật + ≥2 năm làm kỹ thuật kiểm định","Điều 10: Chứng chỉ kiểm định viên có thời hạn; do Cục AT lao động cấp"],
+  chi_tiet:[
+    {nhom:"Điều kiện tổ chức kiểm định (NĐ44 + NĐ140)",icon:"building",items:[
+      {k:"Điều kiện cấp GCN (Điều 4 – NĐ140 sửa)",v:"Tổ chức kiểm định phải: (a) Có thiết bị/dụng cụ phục vụ kiểm định theo quy trình kiểm định và QCKTQG; (b) Có ít nhất 02 kiểm định viên làm việc theo HĐ ≥12 tháng cho từng đối tượng kiểm định; (c) Người phụ trách kỹ thuật phải là kiểm định viên có ≥02 năm kinh nghiệm"},
+      {k:"Hồ sơ cấp GCN (Điều 5 – NĐ140 sửa)",v:"(a) Đơn đề nghị; (b) Quyết định thành lập (đơn vị sự nghiệp); (c) Danh mục thiết bị/dụng cụ phục vụ kiểm định; (d) Danh sách kiểm định viên (theo mẫu); (đ) Tài liệu chứng minh kinh nghiệm người phụ trách. Thời hạn cấp: 30 ngày làm việc từ nhận đủ hồ sơ"},
+      {k:"Thời hạn GCN & thẩm quyền cấp (Điều 6-7)",v:"GCN đủ điều kiện hoạt động kiểm định: hiệu lực 5 NĂM, được gia hạn 5 năm tiếp. Thẩm quyền cấp: Cục Quản lý môi trường y tế/Cục ATVSLĐ... tùy đối tượng kiểm định. Danh mục thẩm quyền tại Phụ lục Ib NĐ44"}
+    ]},
+    {nhom:"Tiêu chuẩn & chứng chỉ kiểm định viên (Điều 9-14)",icon:"user-check",items:[
+      {k:"Tiêu chuẩn kiểm định viên (Điều 9)",v:"(1) ĐH trở lên, chuyên ngành kỹ thuật phù hợp đối tượng kiểm định; (2) Đủ sức khỏe; (3) ≥2 năm làm kỹ thuật kiểm định hoặc thiết kế/SX/lắp đặt/sửa chữa/vận hành đối tượng kiểm định; (4) Đã hoàn thành khóa huấn luyện và sát hạch nghiệp vụ kiểm định"},
+      {k:"Chứng chỉ kiểm định viên (Điều 10-13)",v:"Cấp cho cá nhân đáp ứng tiêu chuẩn Điều 9. Chứng chỉ có thời hạn. Cơ quan cấp: theo phân công tại Phụ lục Ib. Chứng chỉ hết hiệu lực hoặc bị thu hồi → kiểm định viên không được thực hiện kiểm định → Chứng thư GĐ do họ ký không có giá trị pháp lý"}
+    ]}
+  ],
+  ghi_chu:"Đọc kết hợp NĐ 44/2016 + NĐ 140/2018. Dùng để xác minh tổ chức kiểm định có hợp lệ không khi nhận Chứng thư kiểm định.",mau:"secondary",thu_tu:7,lien_ket:["TT362019","L842015"]},
+
+  {id:"ND122022",ky_hieu:"NĐ 12/2022/NĐ-CP",ten:"Xử phạt VPHC về ATVSLĐ liên quan máy móc thiết bị",co_quan:"Chính phủ",hieu_luc:"17/01/2022",loai:"Nghị định",cap:"Nghị định",nhom:["may_moc"],tinh_huong:["xu_phat","phap_ly"],dieu_tiet:["Xử phạt hành vi không kiểm định thiết bị thuộc Danh mục nhóm 2 trước khi sử dụng","Xử phạt sử dụng tổ chức kiểm định không có GCN đủ điều kiện","Xử phạt dùng kiểm định viên không có chứng chỉ để cấp Chứng thư kiểm định","Xử phạt NK thiết bị thuộc nhóm 2 không có kết quả kiểm tra kỹ thuật AT","Mức phạt: từ vài triệu đến 100 triệu đồng tùy hành vi và tính chất vi phạm"],
+  ghi_chu:"Tham khảo khi cần biết mức phạt vi phạm quy định kiểm định ATLĐ với máy móc thiết bị.",mau:"secondary",thu_tu:8,lien_ket:["TT362019","ND44_140","L842015"]},
+
+  {id:"QD102026",ky_hieu:"QĐ 10/2026/QĐ-TTg",ten:"Tiêu chuẩn định mức sử dụng máy móc thiết bị tại cơ quan nhà nước",co_quan:"Thủ tướng Chính phủ",hieu_luc:"09/03/2026",loai:"Quyết định",cap:"Quyết định",nhom:["may_moc"],tinh_huong:["phap_ly"],dieu_tiet:["Sửa đổi QĐ 15/2025/QĐ-TTg: tiêu chuẩn định mức máy móc thiết bị cơ quan tổ chức đơn vị","Mục A: Máy móc thiết bị trang bị theo chức danh (số lượng và mức giá tối đa)","Mục B: Máy móc thiết bị trang bị theo phòng/ban làm việc","Mục C: Thiết bị đầu cuối cơ bản phục vụ công việc trên môi trường số","Mục D: Máy móc thiết bị phục vụ công tác bí mật nhà nước trên môi trường số"],
+  chi_tiet:[
+    {nhom:"Tiêu chuẩn định mức máy móc tại CQNN – QĐ 10/2026",icon:"monitor",items:[
+      {k:"Phạm vi áp dụng",v:"Áp dụng cho cơ quan, tổ chức, đơn vị sử dụng ngân sách nhà nước. Là căn cứ để mua sắm máy móc thiết bị từ ngân sách hoặc thanh lý tài sản công. KHÔNG điều chỉnh về NK thương mại, nhưng là căn cứ pháp lý khi nhà máy/dự án nhà nước NK thiết bị"},
+      {k:"4 Mục định mức (Phụ lục QĐ10)",v:"Mục A: theo chức danh (VD: Bộ trưởng, Thứ trưởng... được trang bị bao nhiêu máy tính, thiết bị). Mục B: theo phòng làm việc. Mục C: thiết bị đầu cuối trên môi trường số (máy tính bảng, điện thoại công vụ...). Mục D: thiết bị xử lý bí mật nhà nước trên môi trường số"},
+      {k:"Điểm mới QĐ10 so với QĐ15/2025",v:"Bổ sung Mục C (thiết bị đầu cuối môi trường số) và Mục D (thiết bị bí mật NN môi trường số). Bổ sung Điều 5a về máy móc phục vụ bí mật NN trên môi trường số. Phân cấp thẩm quyền rõ hơn xuống Giám đốc Học viện CT QG HCM và Văn phòng HĐ nhân dân cấp tỉnh"}
+    ]}
+  ],
+  ghi_chu:"Áp dụng cho cơ quan nhà nước sử dụng ngân sách. Là căn cứ khi dự án NN đặt hàng hoặc NK thiết bị.",mau:"secondary",thu_tu:9,lien_ket:["QD182019"]},
+
+  // ── FTA ──
+  {id:"TT492025",ky_hieu:"TT 49/2025/TT-BCT",ten:"Quy tắc xuất xứ ASEAN – Hàn Quốc (AKFTA)",co_quan:"Bộ Công Thương",hieu_luc:"01/05/2026",loai:"Thông tư",cap:"Thông tư",nhom:["xuat_xu","co","fta"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Quy tắc xuất xứ mới theo AKFTA 2025","Form C/O – áp dụng hàng từ Hàn Quốc","Tiêu chí: CTC, RVC, cộng gộp ASEAN","Hướng dẫn khai xuất xứ trên C/O"],chi_tiet:[
+    {nhom:"Xác định xuất xứ AKFTA – Điều 5-8",icon:"globe",items:[
+      {k:"2 tiêu chí có xuất xứ (Điều 5-6)",v:"(1) THUẦN TÚY: khai thác/trồng/sinh ra/SX hoàn toàn tại lãnh thổ Nước thành viên (VN, HQ hoặc ASEAN). Bao gồm: cây trồng, động vật sống, khoáng sản, hải sản đánh bắt bằng tàu treo cờ NTV, SP từ không gian vũ trụ, phế liệu SX v.v. (2) KHÔNG THUẦN TÚY: đáp ứng RVC ≥40% hoặc Quy tắc cụ thể mặt hàng (Phụ lục I)"},
+      {k:"RVC ≥40% – 2 công thức (Điều 7)",v:"Công thức TRỰC TIẾP: RVC = VOM/FOB × 100% (VOM = trị giá NVL có XK + CP nhân công + CP phân bổ + CP vận chuyển + lợi nhuận). Công thức GIÁN TIẾP: RVC = (FOB – VNM)/FOB × 100% (VNM = trị giá NVL không có XK theo giá CIF NK hoặc giá mua đầu tiên). Nhà XK tự chọn và áp dụng nhất quán trong năm tài chính"},
+      {k:"Quy tắc cụ thể mặt hàng – CTSH (Điều 8)",v:"Phụ lục I: Hàng đáp ứng Quy tắc cụ thể mặt hàng được coi là có XK dù không đạt RVC 40%. Thường là tiêu chí chuyển đổi mã HS (CTH, CTSH) hoặc kết hợp CC/RVC tùy nhóm hàng"},
+      {k:"De Minimis – Điều 13",v:"NVL không đáp ứng tiêu chí CTC vẫn chấp nhận nếu: HH không thuộc Chương 50-63: trị giá NVL không XK ≤10% FOB. HH thuộc Chương 50-63 (dệt may): trọng lượng NVL không XK ≤10% tổng trọng lượng"},
+      {k:"Hàng đặc biệt (Điều 9)",v:"Một số HH được coi là có XK dù SX tại khu công nghiệp bên ngoài lãnh thổ VN và HQ (như Kaesong). Danh mục và quy tắc tại Phụ lục II TT49. Áp dụng quy trình chứng nhận và kiểm tra riêng"}
+    ]},
+    {nhom:"Cộng gộp, vận chuyển trực tiếp & đóng gói – Điều 10-14",icon:"link",items:[
+      {k:"Cộng gộp ASEAN + Hàn Quốc (Điều 10)",v:"NVL có XK tại bất kỳ Nước thành viên AKFTA (VN + HQ + 10 ASEAN) được coi là NVL có XK tại Nước thành viên XK khi sử dụng để SX HH xuất đi Nước thành viên khác. Cộng gộp đầy đủ trong toàn AKFTA – đây là lợi thế lớn hơn EVFTA"},
+      {k:"Vận chuyển trực tiếp (Điều 12)",v:"Hàng phải vận chuyển TRỰC TIẾP từ Nước thành viên XK sang Nước thành viên NK. Quá cảnh qua nước thứ 3 vẫn coi là trực tiếp nếu: (a) cần thiết vì lý do địa lý/vận tải; (b) không tham gia giao dịch thương mại tại đó; (c) không qua GC/CB ngoài dỡ hàng/bốc lại và bảo quản"},
+      {k:"Chứng từ vận chuyển trực tiếp (Điều 36)",v:"Khi quá cảnh nước thứ 3 phải nộp: (1) Vận tải đơn chở suốt phát hành tại Nước XK; (2) C/O mẫu AK; (3) Bản sao hóa đơn thương mại gốc; (4) Chứng từ liên quan khác"}
+    ]},
+    {nhom:"C/O mẫu AK – cấp, sai sót & giáp lưng – Điều 22-25",icon:"file-check",items:[
+      {k:"Đặc điểm C/O mẫu AK (Điều 22)",v:"Bản giấy khổ A4 có chữ ký/con dấu (hoặc ký dấu điện tử). Khai bằng TIẾNG ANH. 1 bộ = 01 bản gốc (Original) + 02 bản sao (Duplicate và Triplicate). Phải có số tham chiếu riêng. Ghi trị giá FOB tại Ô số 9 chỉ khi áp dụng RVC"},
+      {k:"Cấp C/O AK – thời hạn (Điều 24)",v:"Cấp TRƯỚC hoặc TẠI THỜI ĐIỂM giao hàng hoặc không muộn hơn 03 ngày làm việc từ ngày giao hàng. Cấp SAU (retrospectively) được phép nếu do lỗi/sai sót không cố ý hoặc lý do hợp lệ. C/O giáp lưng (back-to-back): cơ quan cấp Nước TG cấp dựa trên C/O gốc còn hiệu lực"},
+      {k:"Xử lý sai sót (Điều 23)",v:"KHÔNG được tẩy xóa. Sửa bằng: (1) Gạch bỏ + bổ sung thông tin mới + ký xác nhận của người có thẩm quyền + đóng dấu cơ quan cấp; hoặc (2) Cấp C/O mới thay thế, ghi ngày cấp C/O bị sai sót lên C/O mới"},
+      {k:"C/O mất/thất lạc/hư hỏng (Điều 25)",v:"Nhà SX/XK nộp đơn đề nghị cấp bản sao chứng thực C/O gốc. Cơ quan cấp lưu hồ sơ C/O gốc để đối chiếu. Bản sao chứng thực có giá trị tương đương bản gốc"}
+    ]},
+    {nhom:"Nộp, hiệu lực & miễn nộp C/O AK – Điều 26-29",icon:"clock",items:[
+      {k:"Hiệu lực C/O AK (Điều 27)",v:"12 THÁNG kể từ ngày cấp. C/O giáp lưng: 12 tháng kể từ ngày cấp C/O gốc. Nộp quá hạn vẫn được chấp nhận nếu không tuân thủ do nguyên nhân khách quan, thiên tai, bất khả kháng hoặc lý do hợp lệ khác. HQ NK quyết định theo từng trường hợp"},
+      {k:"Miễn nộp C/O AK (Điều 28)",v:"Miễn nộp khi: trị giá FOB ≤200 USD (hàng gửi bưu điện hoặc HH nhập không thường xuyên phục vụ tiêu dùng cá nhân). Nếu HQ NK xác định là chia nhỏ cố tình để lẩn tránh → bắt buộc nộp C/O"},
+      {k:"Khác biệt nhỏ (Điều 29)",v:"Khác biệt nhỏ không có nghi ngờ XK → không từ chối C/O. Nhiều HH trên 1 C/O: vướng mắc 1 mặt hàng không ảnh hưởng các mặt hàng còn lại. HQ từ chối phải ghi rõ lý do tại Ô số 4 và gửi lại bản sao cho cơ quan cấp"},
+      {k:"Hóa đơn nước thứ ba (Điều 38)",v:"C/O AK được chấp nhận khi hóa đơn thương mại do CÔNG TY TẠI NƯỚC THỨ 3 phát hành (không phải Nước thành viên AKFTA). Nhà XK phải ghi rõ trên C/O: 'Third Country Invoicing' + tên + nước của công ty phát hành hóa đơn"}
+    ]},
+    {nhom:"Xác minh xuất xứ AKFTA – Điều 30-32",icon:"search",items:[
+      {k:"Kiểm tra C/O sau khi cấp (Điều 31)",v:"Kiểm tra ngẫu nhiên hoặc khi có nghi ngờ. Nước NK gửi đề nghị kèm C/O và lý do nghi ngờ. Cơ quan cấp C/O Nước XK phản hồi trong 02 THÁNG. Tổng quá trình kiểm tra (kể cả thông báo kết quả) không quá 06 THÁNG. Trong thời gian chờ: có thể tạm hoãn ưu đãi nhưng có thể thông quan nếu nhà NK ký quỹ"},
+      {k:"Xác minh thực tế tại Nước XK (Điều 32)",v:"Chỉ áp dụng khi không đồng ý với kết quả kiểm tra Điều 31. Phải thông báo bằng VB trước cho: nhà SX/XK + cơ quan cấp C/O + HQ Nước XK + nhà NK. Nhà SX/XK có 30 ngày để ý kiến bằng VB. Tổng quá trình ≤06 tháng. Cơ quan cấp C/O có thể tạm hoãn trong 15 ngày"},
+      {k:"Lưu trữ hồ sơ (Điều 30)",v:"Nhà SX/XK: lưu hồ sơ đề nghị cấp C/O ít nhất 03 NĂM. Cơ quan cấp C/O: lưu ít nhất 03 năm. Nhà NK: theo quy định pháp luật Nước thành viên NK. Thông tin xác minh bảo mật, chỉ dùng để xác minh hợp lệ C/O"},
+      {k:"Hiệu lực TT49",v:"01/05/2026 (Điều 40). Cơ quan cấp C/O AK tại VN: Cục XNK (Bộ CT) và tổ chức được UBND tỉnh giao nhiệm vụ"}
+    ]}
+  ],
+  ghi_chu:"Hiệu lực từ 01/05/2026. Áp dụng cho hàng xuất xứ Hàn Quốc.",mau:"secondary",thu_tu:1,lien_ket:["TT33","QD467"]},
+  {id:"TT142026",ky_hieu:"TT 14/2026/TT-BCT",ten:"Quy tắc xuất xứ trong Hiệp định EVFTA",co_quan:"Bộ Công Thương",hieu_luc:"10/05/2026",loai:"Thông tư",cap:"Thông tư",nhom:["xuat_xu","co","fta"],tinh_huong:["kiem_tra_ho_so","phap_ly"],dieu_tiet:["Quy tắc xuất xứ mới theo EVFTA 2026","Form EUR.1 / REX – hàng từ EU","Tiêu chí xuất xứ cụ thể theo HS 6 số","Cộng gộp xuất xứ trong EVFTA"],chi_tiet:[
+    {nhom:"Xác định xuất xứ EVFTA – Điều 5-8",icon:"globe",items:[
+      {k:"2 tiêu chí có xuất xứ (Điều 5)",v:"(1) THUẦN TÚY: hàng được khai thác, trồng, sinh ra, sản xuất hoàn toàn tại một Nước thành viên (VN hoặc EU). (2) KHÔNG THUẦN TÚY: hàng sản xuất từ NVL không có XK nhưng NVL đó đã trải qua gia công/chế biến ĐẦY ĐỦ đáp ứng Quy tắc cụ thể mặt hàng tại Phụ lục II TT14"},
+      {k:"Quy tắc cụ thể mặt hàng (Điều 7)",v:"Áp dụng Quy tắc cụ thể mặt hàng tại Phụ lục II: gồm các tiêu chí CC (chuyển đổi Chương), CTH (chuyển đổi nhóm), CTSH (chuyển đổi phân nhóm), RVC (hàm lượng khu vực) hoặc kết hợp. Chỉ áp dụng cho nguyên liệu KHÔNG có xuất xứ"},
+      {k:"Hạn mức linh hoạt De Minimis (Điều 8)",v:"NVL không đáp ứng tiêu chí vẫn được chấp nhận nếu: tổng trị giá hoặc trọng lượng NVL đó ≤ ngưỡng quy định tại Phụ lục II. Thường là ≤10% trị giá EXW (hàng dệt may tính theo trọng lượng). Không áp dụng khi QTCMH yêu cầu trị giá/trọng lượng NVL đáp ứng"},
+      {k:"Công đoạn gia công đơn giản – KHÔNG tính XK (Điều 10)",v:"18 loại công đoạn không được coi là 'gia công đủ': bảo quản, tháo dỡ/lắp ghép kiện hàng, rửa làm sạch, là ủi, sơn đánh bóng đơn giản, xay gạo, bóc vỏ, rây sàng phân loại, đóng gói đơn giản, dán nhãn, pha trộn đơn giản, lắp ghép đơn giản, giết mổ v.v."}
+    ]},
+    {nhom:"Cộng gộp EVFTA – Điều 9",icon:"link",items:[
+      {k:"Cộng gộp song phương VN-EU (Điều 9 khoản 1)",v:"NVL có XK tại VN hoặc EU được coi là NVL có XK tại Nước thành viên kia khi sử dụng làm NVL sản xuất HH xuất khẩu. Điều kiện: công đoạn GC thực hiện tại Nước thành viên vượt quá công đoạn gia công đơn giản (Điều 10)"},
+      {k:"Cộng gộp mở rộng từ ASEAN (Điều 9 khoản 2-6)",v:"NVL từ nước ASEAN đã ký FTA với EU (hiện chỉ có Singapore và Việt Nam) được coi là có XK VN khi đáp ứng quy tắc XK trong FTA tương ứng. Phải ghi rõ trên C/O: 'Application of Article 3(2) of the Protocol'. Điều kiện: nước ASEAN đó cam kết tuân thủ EVFTA và đã thông báo với EU"},
+      {k:"Cộng gộp vải Hàn Quốc (Điều 9 khoản 7-11)",v:"Vải có XK Hàn Quốc được coi là có XK VN khi sử dụng làm NVL GC/SX tại VN cho SP dệt may tại Phụ lục IV. Phải ghi rõ: 'Application of Article 3(7) of Protocol 1'. Điều kiện: Hàn Quốc và EU có FTA (KOFTA đang có hiệu lực) + HQ và VN cùng thực hiện và thông báo EU"}
+    ]},
+    {nhom:"Cơ chế chứng nhận XK EVFTA – Điều 19-25",icon:"award",items:[
+      {k:"Hàng EU nhập vào VN – 3 loại chứng từ (Điều 19)",v:"(1) C/O mẫu EUR.1 do cơ quan có thẩm quyền EU cấp; (2) Chứng từ tự chứng nhận bởi nhà XK ĐỦ ĐIỀU KIỆN (REX) của EU – không giới hạn trị giá; (3) Tự chứng nhận bởi nhà XK bất kỳ cho lô hàng ≤6.000 EUR"},
+      {k:"Hàng VN xuất sang EU – 3 loại chứng từ (Điều 19)",v:"(1) C/O mẫu EUR.1 do Cục XNK/UBND tỉnh VN cấp; (2) Tự chứng nhận bởi nhà XK VN cho lô hàng ≤6.000 EUR; (3) Tự chứng nhận bởi nhà XK ĐỦ ĐIỀU KIỆN (REX) – không giới hạn trị giá (áp dụng sau khi VN thông báo EU)"},
+      {k:"C/O EUR.1 – cấp và cấp sau (Điều 21-22)",v:"Cấp chậm nhất 03 ngày làm việc sau ngày XK. Cấp SAU được phép khi: lỗi khách quan; C/O bị từ chối tại NK; chưa xác định được cảng đến. C/O cấp sau phải ghi 'ISSUED RETROSPECTIVELY' tại Ô số 7"},
+      {k:"Tự chứng nhận XK hàng VN (Điều 25)",v:"Ghi trực tiếp trên Invoice/phiếu giao hàng/CT thương mại (không phải trên mẫu riêng). Phải ký tay. Trong 03 ngày làm việc kể từ ngày phát hành phải khai báo đăng tải lên hệ thống Bộ CT. Hiệu lực 2 năm kể từ ngày phát hành"},
+      {k:"Miễn C/O (Điều 29)",v:"Hàng gửi kiện nhỏ cá nhân → cá nhân ≤500 EUR (vào EU) hoặc ≤200 USD (vào VN). Hành lý cá nhân người du lịch ≤1.200 EUR (vào EU) hoặc ≤200 USD (vào VN)"}
+    ]},
+    {nhom:"Hiệu lực, nộp, lưu trữ & xác minh C/O EVFTA – Điều 26-34",icon:"check-circle",items:[
+      {k:"Hiệu lực C/O (Điều 26)",v:"12 THÁNG kể từ ngày phát hành. Nộp quá hạn vẫn được chấp nhận nếu có lý do hợp lệ (thiên tai, bất khả kháng). Cơ quan HQ NK quyết định xem xét từng trường hợp"},
+      {k:"Khác biệt nhỏ & lỗi hình thức (Điều 32)",v:"Khác biệt nhỏ giữa C/O và CT HQ không làm mất hiệu lực C/O. Lỗi đánh máy không là lý do từ chối nếu không tạo nghi ngờ về tính xác thực. Nhiều HH trên 1 C/O: vướng mắc 1 mặt hàng không ảnh hưởng các mặt hàng còn lại"},
+      {k:"Lưu trữ hồ sơ (Điều 31)",v:"Nhà XK tự chứng nhận/đề nghị cấp C/O: lưu ít nhất 3 NĂM. Cơ quan cấp C/O: lưu ít nhất 3 năm. Cơ quan HQ nước NK: lưu ít nhất 3 năm. Có thể lưu dạng điện tử miễn tra cứu/in ra được"},
+      {k:"Xác minh C/O (Điều 34)",v:"Xác minh ngẫu nhiên hoặc khi có nghi ngờ hợp lý. Nước NK gửi C/O kèm lý do nghi ngờ cho Nước XK. Trong 10 THÁNG phải có kết quả; nếu không nhận được → từ chối ưu đãi. Tạm dừng ưu đãi trong thời gian chờ: có thể cho TQ nếu không có rủi ro gian lận"},
+      {k:"Hiệu lực TT14",v:"01/05/2026 (Điều 40). Cơ quan cấp C/O EUR.1 tại VN: Cục Xuất nhập khẩu (Bộ CT) và UBND cấp tỉnh"}
+    ]}
+  ],
+  ghi_chu:"Hiệu lực từ 10/05/2026. Áp dụng cho hàng xuất xứ EU.",mau:"secondary",thu_tu:2,lien_ket:["TT33","QD467"]},
+];
+
+// ─── FLOW DATA ───
+const FLOWS = [
+  {so:1,title:"Kiểm tra hàng có được phép nhập khẩu không",color:"var(--color-warning)",dot_color:"#964219",vbs:["ND69","L692025","ND242026"]},
+  {so:2,title:"Xác định hồ sơ cần chuẩn bị, khai báo VNACCS",color:"var(--color-primary)",dot_color:"#01696f",vbs:["TT38","46VBHN"]},
+  {so:3,title:"Phân loại mã HS và xác định trị giá hải quan",color:"var(--color-primary)",dot_color:"#01696f",vbs:["54VBHN","46VBHN","21VBHN"]},
+  {so:4,title:"Kiểm tra xuất xứ – C/O và ưu đãi FTA",color:"var(--color-info)",dot_color:"#006494",vbs:["TT33","QD467","TT492025","TT142026"]},
+  {so:5,title:"Kiểm tra chuyên ngành (theo tính chất hàng)",color:"var(--color-success)",dot_color:"#437a22",vbs:["ND15","ND262026","TT012026"]},
+  {so:6,title:"Kiểm tra nhãn hàng hóa trước lưu thông",color:"var(--color-secondary)",dot_color:"#4a5568",vbs:["ND37_2026"]},
+];
+
+const PCA_VBS = ["54VBHN","46VBHN","TT38","21VBHN","TT33","ND128_102"];
+
+// ─── STATE ───
+let currentView = "all";
+let currentFilter = "all";
+let searchQuery = "";
+
+// ─── RENDER ───
+function getVb(id){ return VB.find(v=>v.id===id); }
+
+function getBadgeHTML(mau,loai){
+  const cls = {primary:"badge-primary",secondary:"badge-secondary",warning:"badge-warning",error:"badge-error",success:"badge-success"}[mau]||"badge-secondary";
+  const icon = {VBHN:"layers",Luật:"book-open","Nghị định":"file-text","Thông tư":"file","Quyết định":"stamp"}[loai]||"file";
+  return `<span class="card-badge ${cls}"><i data-lucide="${icon}" style="width:10px;height:10px"></i>${loai}</span>`;
+}
+
+function renderCard(v, delay=0){
+  const noteClass = v.mau==="error"?"danger":v.mau==="warning"?"warn":"";
+  return `<div class="card" style="animation-delay:${delay}ms" onclick="openPanel('${v.id}')">
+    <div class="card-header">
+      ${getBadgeHTML(v.mau,v.loai)}
+      <div class="card-title-wrap">
+        <div class="card-ky-hieu">${v.ky_hieu}</div>
+        <div class="card-title">${v.ten}</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="meta-item"><i data-lucide="building-2" style="width:11px;height:11px"></i>${v.co_quan}</span>
+        <span class="meta-item"><i data-lucide="calendar" style="width:11px;height:11px"></i>${v.hieu_luc}</span>
+      </div>
+      <div class="card-dieu">
+        <div class="dieu-label">Điều chỉnh</div>
+        <ul class="dieu-list">${v.dieu_tiet.slice(0,3).map(d=>`<li>${d}</li>`).join('')}${v.dieu_tiet.length>3?`<li style="color:var(--color-primary);font-style:italic">+${v.dieu_tiet.length-3} nội dung khác…</li>`:''}</ul>
+      </div>
+      <div class="card-note ${noteClass}">${v.ghi_chu}</div>
+    </div>
+  </div>`;
+}
+
+function getFilteredVbs(){
+  let list = VB.slice();
+  if(currentView==="all"||currentView==="tat_ca") list=VB.slice();
+  else if(currentView==="flow"||currentView==="pca") list=VB.slice();
+  else if(["may_moc","phan_bon","hoa_chat","thuc_pham","fta","hang_hoa","xuat_xu","co","xu_phat","nhan_mac"].includes(currentView))
+    list=VB.filter(v=>v.nhom.includes(currentView));
+  else if(["kiem_tra_ho_so","hang_hoa_cam","kiem_tra_sau_thong_quan","khai_bao","phap_ly"].includes(currentView))
+    list=VB.filter(v=>v.tinh_huong.includes(currentView));
+
+  if(searchQuery){
+    const q=searchQuery.toLowerCase();
+    list=list.filter(v=>v.ky_hieu.toLowerCase().includes(q)||v.ten.toLowerCase().includes(q)||v.dieu_tiet.some(d=>d.toLowerCase().includes(q))||v.ghi_chu.toLowerCase().includes(q));
+  }
+  if(currentFilter!=="all") list=list.filter(v=>v.loai===currentFilter||v.cap===currentFilter);
+  return list;
+}
+
+function renderAll(){
+  const list=getFilteredVbs();
+  const area=document.getElementById("contentArea");
+  const filterRow=document.getElementById("filterRow");
+  const title=document.getElementById("viewTitle");
+
+  const titles={all:"Tất cả văn bản pháp luật",flow:"Luồng tra cứu khi khai báo lô hàng",pca:"Văn bản phục vụ Kiểm tra sau thông quan",may_moc:"Máy móc Thiết bị NK",phan_bon:"Pháp luật về Phân bón XNK",hoa_chat:"Pháp luật về Hóa chất nhập khẩu",thuc_pham:"Kiểm tra chuyên ngành Thực phẩm",fta:"Xuất xứ & Ưu đãi FTA",kiem_tra_ho_so:"Tra cứu: Kiểm tra hồ sơ",hang_hoa_cam:"Tra cứu: Hàng cấm & Điều kiện NK",xu_phat:"Tra cứu: Xử phạt vi phạm"};
+  title.textContent=titles[currentView]||"Tra cứu văn bản";
+
+  if(currentView==="flow"){
+    filterRow.style.display="none";
+    area.innerHTML=renderFlow();
+    lucide.createIcons();
+    return;
+  }
+  if(currentView==="pca"){
+    filterRow.style.display="none";
+    area.innerHTML=renderPCA();
+    lucide.createIcons();
+    return;
+  }
+  filterRow.style.display="flex";
+
+  if(!list.length){
+    area.innerHTML=`<div class="empty-state"><div class="empty-icon"><i data-lucide="search-x" style="width:40px;height:40px"></i></div><div class="empty-title">Không tìm thấy kết quả</div><div>Thử từ khóa khác hoặc xóa bộ lọc</div></div>`;
+    lucide.createIcons();
+    return;
+  }
+  area.innerHTML=`<div class="result-count"><i data-lucide="file-stack" style="width:12px;height:12px"></i>${list.length} văn bản</div><div class="cards-grid">${list.map((v,i)=>renderCard(v,i*30)).join('')}</div>`;
+  lucide.createIcons();
+}
+
+function renderFlow(){
+  let html=`<div class="flow-wrap">`;
+  FLOWS.forEach((f,fi)=>{
+    const vbs=f.vbs.map(id=>getVb(id)).filter(Boolean);
+    html+=`<div class="flow-step">
+      <div class="flow-line">
+        <div class="flow-dot" style="background:${f.dot_color};color:#fff"><span>${f.so}</span></div>
+        ${fi<FLOWS.length-1?`<div class="flow-connector"></div>`:''}
+      </div>
+      <div class="flow-content">
+        <div class="flow-step-title"><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:${f.dot_color}"></i>${f.title}</div>
+        <div class="flow-vbs">${vbs.map(v=>`<div class="flow-vb-chip" onclick="openPanel('${v.id}')">
+          <span class="flow-vb-code">${v.ky_hieu}</span>
+          <span class="flow-vb-name">${v.ten}</span>
+          <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--color-text-faint);flex-shrink:0"></i>
+        </div>`).join('')}</div>
+      </div>
+    </div>`;
+  });
+  return html+'</div>';
+}
+
+function renderPCA(){
+  const list=PCA_VBS.map(id=>getVb(id)).filter(Boolean);
+  return `<div style="margin-bottom:10px">
+    <div style="background:var(--color-error-light);border:1px solid var(--color-error-border);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:12px;font-size:var(--text-sm)">
+      <strong style="color:var(--color-error)">Kiểm tra sau thông quan (PCA)</strong> – Căn cứ Điều 77–80 Luật Hải quan, cơ quan hải quan có quyền kiểm tra lại hồ sơ trong vòng <strong>5 năm</strong> sau ngày thông quan. Hồ sơ phải lưu đủ 5 năm.
+    </div>
+    <div class="cards-grid">${list.map((v,i)=>renderCard(v,i*30)).join('')}</div>
+  </div>`;
+}
+
+// ─── DETAIL PANEL ───
+function openPanel(id){
+  const v=getVb(id);
+  if(!v)return;
+  document.getElementById("panelKyHieu").textContent=v.ky_hieu;
+  document.getElementById("panelTitle").textContent=v.ten;
+
+  const related=(v.lien_ket||[]).map(lid=>getVb(lid)).filter(Boolean);
+  const body=document.getElementById("panelBody");
+  const chiTietHTML=(v.chi_tiet&&v.chi_tiet.length)?`
+    <div class="chi-tiet-section">
+      <div class="chi-tiet-head"><i data-lucide="book-open" style="width:13px;height:13px"></i>Nội dung chi tiết từ văn bản gốc</div>
+      ${v.chi_tiet.map(g=>`
+        <div class="chi-tiet-nhom">
+          <div class="chi-tiet-nhom-title"><i data-lucide="${g.icon||'chevron-right'}" style="width:12px;height:12px"></i>${g.nhom}</div>
+          <div class="chi-tiet-rows">${g.items.map(it=>`<div class="chi-tiet-row"><span class="chi-tiet-k">${it.k}</span><span class="chi-tiet-v">${it.v}</span></div>`).join('')}</div>
+        </div>`).join('')}
+    </div>`:'';
+  body.innerHTML=`
+    <div class="panel-section">
+      <div class="panel-section-head"><i data-lucide="info" style="width:13px;height:13px"></i>Thông tin chung</div>
+      <div class="panel-section-body">
+        <div class="panel-row"><span class="panel-row-label">Loại</span><span class="panel-row-value">${v.loai} · ${v.cap}</span></div>
+        <div class="panel-row"><span class="panel-row-label">Cơ quan</span><span class="panel-row-value">${v.co_quan}</span></div>
+        <div class="panel-row"><span class="panel-row-label">Hiệu lực</span><span class="panel-row-value">${v.hieu_luc}</span></div>
+        <div class="panel-row"><span class="panel-row-label">Ghi chú</span><span class="panel-row-value" style="color:var(--color-${v.mau==='error'?'error':v.mau==='warning'?'warning':'primary'})">${v.ghi_chu}</span></div>
+      </div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-head"><i data-lucide="list-checks" style="width:13px;height:13px"></i>Điều chỉnh chi tiết</div>
+      <div class="panel-section-body" style="padding:8px 14px">
+        ${v.dieu_tiet.map((d,i)=>`<div class="dieu-item"><span class="dieu-num">${i+1}</span><span class="dieu-text">${d}</span></div>`).join('')}
+      </div>
+    </div>
+    ${chiTietHTML}
+    ${related.length?`<div class="panel-section">
+      <div class="panel-section-head"><i data-lucide="link-2" style="width:13px;height:13px"></i>Văn bản liên kết</div>
+      <div class="panel-section-body">
+        <div class="related-chips">${related.map(r=>`<span class="related-chip" onclick="openPanel('${r.id}')" title="${r.ten}">${r.ky_hieu}</span>`).join('')}</div>
+      </div>
+    </div>`:''}
+  `;
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("detailPanel").classList.add("open");
+  lucide.createIcons();
+}
+
+function closePanel(){
+  document.getElementById("overlay").classList.remove("open");
+  document.getElementById("detailPanel").classList.remove("open");
+}
+
+// ─── NAV / FILTER ───
+function setView(el,view){
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  el.classList.add("active");
+  currentView=view;
+  currentFilter="all";
+  document.querySelectorAll(".tag-btn").forEach(b=>{b.classList.toggle("active",b.dataset.filter==="all")});
+  renderAll();
+}
+
+function setFilter(el,filter){
+  document.querySelectorAll(".tag-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  currentFilter=filter;
+  renderAll();
+}
+
+// ─── THEME ───
+function toggleTheme(){
+  const html=document.documentElement;
+  const t=html.getAttribute("data-theme")==="dark"?"light":"dark";
+  html.setAttribute("data-theme",t);
+  const btn=document.querySelector("[data-theme-toggle]");
+  btn.innerHTML=t==="dark"?`<i data-lucide="sun" style="width:15px;height:15px"></i>`:`<i data-lucide="moon" style="width:15px;height:15px"></i>`;
+  lucide.createIcons();
+}
+
+// ─── SEARCH ───
+document.getElementById("searchInput").addEventListener("input",function(){
+  searchQuery=this.value.trim();
+  if(currentView==="flow"||currentView==="pca"){ currentView="all"; document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active")); document.querySelector("[data-view='all']").classList.add("active"); }
+  renderAll();
+});
+
+// ─── MOBILE ───
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("open");
+}
+function checkMobile(){
+  const isMob=window.innerWidth<=768;
+  document.getElementById("menuBtn").style.display=isMob?"flex":"none";
+}
+window.addEventListener("resize",checkMobile);
+checkMobile();
+
+// ─── INIT ───
+renderAll();
+</script>
+</body>
+</html>
+                       
